@@ -27,9 +27,9 @@ import com.transporte.model.Itinerario;
 import com.transporte.model.ReglaNegocioException;
 import com.transporte.repository.ItinerarioObserver;
 
-/**
- * lista de itinerarios, acciones Nuevo / Editar / Eliminar.
-/*Solo se refresca cuando hay cambio */
+
+ /* lista de itinerarios, acciones Nuevo / Editar / Eliminar.
+Solo se refresca cuando hay cambio */
 public class ItinerarioView extends JFrame implements ItinerarioObserver {
 
     private static final String[] COLUMNAS =

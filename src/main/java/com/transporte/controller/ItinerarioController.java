@@ -1,14 +1,20 @@
 package com.transporte.controller;
 
-import com.transporte.model.*;
+import java.util.List;
+
+import com.transporte.model.Autobus;
+import com.transporte.model.Conductor;
+import com.transporte.model.EstadoRecorrido;
+import com.transporte.model.Horario;
+import com.transporte.model.Itinerario;
+import com.transporte.model.ReglaNegocioException;
+import com.transporte.model.Ruta;
 import com.transporte.repository.Catalogo;
 import com.transporte.repository.ItinerarioObserver;
 import com.transporte.repository.ItinerarioRepositorio;
-import java.util.List;
 
-/**
- * CONTROLADOR (MVC): recibe las acciones de la vista, aplica las reglas de negocio
- * y delega la persistencia en el repositorio. La vista nunca toca el repositorio.
+
+/*  recibe las acciones de la vista,  y delega la persistencia en el repositorio. La vista nunca toca el repositorio.
  */
 public class ItinerarioController {
 

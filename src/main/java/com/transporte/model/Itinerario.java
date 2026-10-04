@@ -1,7 +1,7 @@
 package com.transporte.model;
 
-/**
- * Itinerario: asocia Ruta + Autobus + Conductor + Horario + EstadoRecorrido. se construye con patron builder valida la regla denegocio
+/*
+ Itinerario: asocia Ruta + Autobus + Conductor + Horario + EstadoRecorrido. se construye con patron builder valida la regla denegocio
  */
 public final class Itinerario {
     private final String idItinerario;
