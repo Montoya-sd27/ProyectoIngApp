@@ -17,20 +17,20 @@ public class AutobusController {
     }
 
     private void inicializarEventos() {
-        // Clic en los botones de acción
+        // Click en los botones de acción
         vista.getBtnAgregar().addActionListener(e -> agregarAutobus());
         vista.getBtnEditar().addActionListener(e -> editarAutobus());
         vista.getBtnEliminar().addActionListener(e -> eliminarAutobus());
         vista.getBtnCambiarEstado().addActionListener(e -> cambiarEstado());
 
-        // La tecla ENTER actúa como "Aceptar":
-        // Si hay una fila seleccionada, Guarda la edición.
-        // Si no hay fila seleccionada, Registra una nueva unidad.
+        // La tecla enter actúa como "Aceptar":
+        // Si hay una fila seleccionada guarda la edición
+        // Si no hay fila seleccionada registra una nueva unidad.
         vista.getTxtPlaca().addActionListener(e -> confirmarAccionPorEnter());
         vista.getTxtModelo().addActionListener(e -> confirmarAccionPorEnter());
         vista.getTxtCapacidad().addActionListener(e -> confirmarAccionPorEnter());
 
-        // Al hacer clic en una unidad de la tabla, carga sus datos en los campos
+        // Al hacer click en una unidad de la tabla carga sus datos en las casilas
         vista.getTablaAutobuses().getSelectionModel().addListSelectionListener(e -> {
             int fila = vista.getTablaAutobuses().getSelectedRow();
             if (fila != -1) {
@@ -48,9 +48,7 @@ public class AutobusController {
         vista.getBtnLimpiarSeleccion().addActionListener(e -> vista.limpiarSeleccionYCampos());
     }
 
-    /**
-     * Resuelve la acción de la tecla ENTER según el contexto del usuario.
-     */
+    // Resuelve la acción de la tecla ENTER según el contexto del usuario.
     private void confirmarAccionPorEnter() {
         int fila = vista.getTablaAutobuses().getSelectedRow();
         if (fila != -1) {
@@ -60,13 +58,10 @@ public class AutobusController {
         }
     }
 
-    
-     /* Las reglas (placa, modelo, capacidad, duplicados) viven SOLO en {@link FlotaModel}: aquí únicamente  se convierte el texto de capacidad a número y se muestra el mensaje que lance el modelo.
-     */
     private void agregarAutobus() {
         try {
             Autobus bus = leerFormulario();
-            modelo.agregarAutobus(bus);   // valida y normaliza la placa (mayúsculas)
+            modelo.agregarAutobus(bus);   // valida y setea la placa a mayúsculas
 
             vista.getModeloTabla().addRow(new Object[]{bus.getPlaca(), bus.getModelo(), bus.getCapacidad(), bus.getEstado()});
             vista.limpiarSeleccionYCampos();
@@ -86,7 +81,7 @@ public class AutobusController {
 
         try {
             Autobus busActualizado = leerFormulario();
-            modelo.actualizarAutobus(fila, busActualizado);   // valida, incluida la placa repetida en OTRA unidad
+            modelo.actualizarAutobus(fila, busActualizado);   // valida, incluida la placa repetida en otra unidad
 
             vista.getModeloTabla().setValueAt(busActualizado.getPlaca(), fila, 0);
             vista.getModeloTabla().setValueAt(busActualizado.getModelo(), fila, 1);
@@ -100,7 +95,7 @@ public class AutobusController {
         }
     }
 
-    /** Lee los campos del formulario. Lanza IllegalArgumentException si la capacidad no es un número. */
+    // Lee los campos del formulario. Lanza incorrecto si la capacidad no es un número
     private Autobus leerFormulario() {
         String placa = vista.getTxtPlaca().getText().trim();
         String modeloTexto = vista.getTxtModelo().getText().trim();
@@ -157,7 +152,6 @@ public class AutobusController {
         String estadoActual = bus.getEstado();
         String nuevoEstado;
 
-        // Ciclo circular: Operativo  -En Mantenimiento - Fuera de Servicio - Operativo
         switch (estadoActual != null ? estadoActual.trim() : "") {
             case "Operativo":
                 nuevoEstado = "En Mantenimiento";
