@@ -8,7 +8,7 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
-/** Paleta y utilidades de estilo compartidas por todas las vistas. */
+// Paleta y utilidades de estilo (son las mismas para todas las vistas)
 public final class EstiloUI {
     public static final Color AZUL = new Color(0x003366);
     public static final Color GRIS = new Color(0xE9E1E1);
@@ -29,7 +29,7 @@ public final class EstiloUI {
         return s.substring(0, 1).toUpperCase() + s.substring(1);
     }
 
-    /** Barra superior azul con el nombre de la app y botón "Cerrar sesión". */
+    // Barra superior azul con el nombre de la app y botón "Cerrar sesión"
     public static JPanel encabezado(Runnable onCerrarSesion) {
         JPanel p = new JPanel(new BorderLayout());
         p.setBackground(AZUL);
@@ -49,7 +49,7 @@ public final class EstiloUI {
         return p;
     }
 
-    /** Campo/combobox con fondo gris, como en el formulario de registro de unidad. */
+    // Campo/combobox con fondo gris, como en el formulario de registro de unidad
     public static void estilizarCampo(JComponent c) {
         c.setBackground(GRIS);
         c.setFont(FUENTE);
@@ -69,7 +69,7 @@ public final class EstiloUI {
         c.setBorder(new LineBorder(GRIS, 4));
     }
 
-    /** Botón de esquinas redondeadas con borde del color indicado. */
+    // Botón de esquinas redondeadas con borde del color indicado
     public static class BotonRedondeado extends JButton {
         private final Color fondo;
         private final Color borde;
@@ -105,14 +105,14 @@ public final class EstiloUI {
         return new BotonRedondeado(texto, VERDE, VERDE.darker().darker());
     }
 
-    /** Botón azul con texto blanco (acciones de navegación). */
+    // Botón azul con texto blanco (acciones de navegación)
     public static BotonRedondeado botonAzul(String texto) {
         BotonRedondeado b = new BotonRedondeado(texto, AZUL, AZUL);
         b.setForeground(Color.WHITE);
         return b;
     }
 
-    /** Botón amarillo (acciones secundarias). */
+    // Botón amarillo (acciones secundarias)
     public static BotonRedondeado botonAmarillo(String texto) {
         return new BotonRedondeado(texto, AMARILLO, AMARILLO.darker().darker());
     }
