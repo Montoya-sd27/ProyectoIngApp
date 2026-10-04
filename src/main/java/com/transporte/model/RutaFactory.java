@@ -3,19 +3,13 @@ package com.transporte.model;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * PATRÓN FACTORY METHOD: centraliza la creación de rutas según su tipo, de modo que
- * el resto del sistema no depende de las clases concretas RutaUrbana / RutaExtraurbana.
- */
+// PATRÓN FACTORY METHOD: centraliza la creación de rutas según su tipo, de modo que el resto del sistema no depende de las clases concretas RutaUrbana / RutaExtraurbana
 public final class RutaFactory {
 
     public enum TipoRuta { URBANA, EXTRAURBANA }
 
     private RutaFactory() { }
 
-    /**
-     * @param extra para URBANA: paradas separadas por coma; para EXTRAURBANA: ciudad dormitorio.
-     */
     public static Ruta crear(TipoRuta tipo, String id, String origen, String destino, String extra) {
         switch (tipo) {
             case URBANA:
