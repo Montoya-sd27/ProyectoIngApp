@@ -1,6 +1,6 @@
 package com.transporte.model;
 
-/** Clase base de las rutas (diagrama de clases: Rutas-RutaUrbana-RutaExtraurbana). */
+// Clase base de las rutas
 public abstract class Ruta {
     private final String idRuta;
     private final String origen;
@@ -16,10 +16,10 @@ public abstract class Ruta {
     public String getOrigen() { return origen; }
     public String getDestino() { return destino; }
 
-    /** "Urbana" o "Extraurbana". */
+    // ya sea "Urbana" o "Extraurbana"
     public abstract String getTipo();
 
-    /** Información propia de cada tipo (paradas o ciudad dormitorio). */
+    // Información propia de cada tipo
     public abstract String getDetalle();
 
     @Override
