@@ -51,7 +51,7 @@ public class FlotaModel {
             throw new IllegalArgumentException("El modelo no puede exceder los 40 caracteres.");
         }
 
-        // Validación de Capacidad (1 a 100 pasajeros)
+        // Validación de Capacidad (lo coloco de 1 a 100 pasajeros)
         if (bus.getCapacidad() <= 0 || bus.getCapacidad() > 100) {
             throw new IllegalArgumentException("La capacidad de pasajeros debe estar entre 1 y 100.");
         }
@@ -118,8 +118,7 @@ public class FlotaModel {
             }
         }
 
-        // INTEGRACIÓN: se actualiza el MISMO objeto (no se reemplaza en la lista) para que los
-        // itinerarios que ya referencian esta unidad vean la placa/modelo/estado nuevos.
+        // INTEGRACIÓN: se actualiza el MISMO objeto (no se reemplaza en la lista) para que los itinerarios que ya referencian esta unidad vean la placa/modelo/estado nuevos.
         Autobus existente = listaAutobuses.get(indice);
         existente.setPlaca(bus.getPlaca());
         existente.setModelo(bus.getModelo());
@@ -135,10 +134,6 @@ public class FlotaModel {
         }
     }
 
-    /**
-     * Ciclo circular entre los 3 estados:
-     * Operativo -> En Mantenimiento -> Fuera de Servicio -> Operativo
-     */
     public String alternarSiguienteEstado(String estadoActual) {
         if (estadoActual == null) return "Operativo";
 
