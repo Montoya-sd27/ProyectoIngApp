@@ -34,9 +34,7 @@ public class GestionFlotaVentana extends JFrame {
         this(null, null);
     }
 
-    /**
-     * @param onCerrarSesion acción del botón "Cerrar sesión" del encabezado (null = sin botón).
-     */
+    // @param onCerrarSesion acción del botón "Cerrar sesión" del encabezado (null = sin botón).
     public GestionFlotaVentana(Runnable onCerrarSesion) {
         this(onCerrarSesion, null);
     }
