@@ -10,9 +10,24 @@ public class CargaDatosLogin {
     //lista todos los usuarios
     private static List<Usuario> listaUsuarios = new ArrayList<>();
 
+    // acción que se ejecuta cada vez que se registra un usuario (por ejemplo, guardar en archivo)
+    private static Runnable oyente;
+
+    /** Define la acción a ejecutar después de cada registro; null la quita. */
+    public static void establecerOyente(Runnable nuevoOyente) {
+        oyente = nuevoOyente;
+    }
+
+    /** Reemplaza todos los usuarios por los indicados, sin avisar al oyente (carga inicial desde archivo). */
+    public static void restaurar(List<Usuario> usuarios) {
+        listaUsuarios.clear();
+        listaUsuarios.addAll(usuarios);
+    }
+
     //  agregar un usuario nuevo a la lista
     public static void agregarUsuario(Usuario nuevoUsuario) {
         listaUsuarios.add(nuevoUsuario);
+        if (oyente != null) oyente.run();
     }
 
     // buscamos un usuario por su correo
