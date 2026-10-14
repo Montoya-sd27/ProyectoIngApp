@@ -65,7 +65,7 @@ class IntegracionFlotaItinerariosTest {
         Autobus bus = flota.obtenerAutobus(0);
         Itinerario it = controller.crear(ruta, bus, conductor, h(), EstadoRecorrido.PROGRAMADO);
 
-        bus.setEstado("En Mantenimiento");   /* lo que hace "Alternar Estado" en la ventana de flota
+        bus.setEstado("En Mantenimiento");   /* lo que hace "Alternar Estado" en la ventana de flota*/
 
         assertThrows(ReglaNegocioException.class, () -> controller.editar(it.getIdItinerario(), ruta, bus,
                 conductor, h(), EstadoRecorrido.PROGRAMADO));
