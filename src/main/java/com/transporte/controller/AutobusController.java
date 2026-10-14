@@ -168,6 +168,7 @@ public class AutobusController {
         }
 
         bus.setEstado(nuevoEstado);
+        modelo.notificarCambio();
         vista.getModeloTabla().setValueAt(nuevoEstado, fila, 3);
         vista.getCmbEstado().setSelectedItem(nuevoEstado);
     }

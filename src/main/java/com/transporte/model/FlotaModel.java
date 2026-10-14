@@ -5,6 +5,7 @@ import java.util.List;
 
 public class FlotaModel {
     private List<Autobus> listaAutobuses;
+    private final List<Runnable> oyentes = new ArrayList<>();
 
     public FlotaModel() {
         this.listaAutobuses = new ArrayList<>();
@@ -67,6 +68,7 @@ public class FlotaModel {
         }
 
         listaAutobuses.add(bus);
+        notificarCambio();
     }
 
     public Autobus obtenerAutobus(int indice) {
@@ -124,13 +126,27 @@ public class FlotaModel {
         existente.setModelo(bus.getModelo());
         existente.setCapacidad(bus.getCapacidad());
         existente.setEstado(bus.getEstado());
+        notificarCambio();
     }
 
     public void eliminarAutobus(int indice) throws IllegalArgumentException {
         if (indice >= 0 && indice < listaAutobuses.size()) {
             listaAutobuses.remove(indice);
+            notificarCambio();
         } else {
             throw new IllegalArgumentException("No se pudo eliminar: índice fuera de rango.");
+        }
+    }
+
+    /** Registra una acción que se ejecuta cada vez que cambia la lista de unidades o alguna de ellas. */
+    public void agregarOyente(Runnable oyente) {
+        oyentes.add(oyente);
+    }
+
+    /** Avisa a los oyentes de que hubo un cambio (también para cambios hechos directamente sobre un Autobus). */
+    public void notificarCambio() {
+        for (Runnable oyente : oyentes) {
+            oyente.run();
         }
     }
 

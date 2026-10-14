@@ -9,7 +9,7 @@ import com.transporte.model.FlotaModel;
 import com.transporte.model.Usuario;
 import com.transporte.repository.Catalogo;
 import com.transporte.repository.ItinerarioRepositorio;
-import com.transporte.repository.ItinerarioRepositorioMemoria;
+import com.transporte.persistence.PersistenciaArchivos;
 import com.transporte.view.GestionFlotaVentana;
 import com.transporte.view.ItinerarioView;
 import com.transporte.view.NavegacionAdmin;
@@ -37,14 +37,20 @@ public final class AppNavegacion implements NavegacionAdmin {
     // ---- Datos compartidos entre módulos (fuente única de verdad) ----
     private final FlotaModel flota = new FlotaModel();
     private final Catalogo catalogo = Catalogo.conDatosDemo(flota);
-    private final ItinerarioRepositorio itinerarios = ItinerarioRepositorioMemoria.getInstance();
+    private final ItinerarioRepositorio itinerarios;
 
     private VentanaLogin ventanaLogin;
     private ItinerarioView ventanaItinerarios;
     private GestionFlotaVentana ventanaFlota;
     private RegistroUsuarioAdminVentana ventanaUsuarios;
 
-    private AppNavegacion() { }
+    private AppNavegacion() {
+        // Los datos se leen de la carpeta "datos" al arrancar y se guardan en cada cambio.
+        PersistenciaArchivos persistencia = PersistenciaArchivos.porDefecto();
+        persistencia.activarUsuarios();
+        persistencia.activarUnidades(flota);
+        itinerarios = persistencia.activarItinerarios(flota);
+    }
 
     public static synchronized AppNavegacion getInstance() {
         if (instancia == null) instancia = new AppNavegacion();
