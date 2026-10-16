@@ -41,7 +41,7 @@ public class ItinerarioController {
         return catalogo.getUnidades().stream().filter(ItinerarioController::esOperativa).toList();
     }
 
-    private static boolean esOperativa(Autobus unidad) {
+    public static boolean esOperativa(Autobus unidad) {
         return unidad.getEstado() != null && unidad.getEstado().trim().equalsIgnoreCase("Operativo");
     }
 

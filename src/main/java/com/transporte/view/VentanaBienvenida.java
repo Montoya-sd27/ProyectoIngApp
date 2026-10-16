@@ -9,7 +9,7 @@ import javax.swing.border.EmptyBorder;
 
 /**
  * Pantalla pequeña que confirma con qué rol se inició sesión. Es un ejemplo para mostrar que el
- * login funciona con los roles que todavía no tienen pantallas propias (estudiante, empleado, conductor).
+ * login funciona con los roles que todavía no tienen pantallas propias (conductor).
  */
 public class VentanaBienvenida extends JFrame {
 
