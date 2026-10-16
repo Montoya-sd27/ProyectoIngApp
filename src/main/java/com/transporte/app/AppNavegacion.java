@@ -2,11 +2,13 @@ package com.transporte.app;
 
 import com.transporte.controller.AutobusController;
 import com.transporte.controller.ItinerarioController;
+import com.transporte.controller.RutasDisponiblesController;
 import com.transporte.controller.UsuarioAdminController;
 import com.transporte.model.Autobus;
 import com.transporte.model.Administrador;
 import com.transporte.model.FlotaModel;
 import com.transporte.model.Usuario;
+import com.transporte.model.UsuarioConSaldo;
 import com.transporte.repository.Catalogo;
 import com.transporte.repository.ItinerarioRepositorio;
 import com.transporte.persistence.PersistenciaArchivos;
@@ -15,6 +17,7 @@ import com.transporte.view.ItinerarioView;
 import com.transporte.view.NavegacionAdmin;
 import com.transporte.view.RegistroUsuarioAdminVentana;
 import com.transporte.view.VentanaBienvenida;
+import com.transporte.view.VentanaInicioUsuario;
 import com.transporte.view.VentanaLogin;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -28,7 +31,8 @@ import javax.swing.JOptionPane;
  *
  *  - Login: {@link #mostrarLogin()} abre la ventana de inicio de sesión; al autenticarse, el
  *           Administrador entra directo a Gestión de itinerarios (desde ahí llega a Gestión de unidades
- *           y al backoffice de registro de usuarios). Los demás roles ven una pantalla de bienvenida.
+ *           y al backoffice de registro de usuarios). El estudiante y el empleado entran a su pantalla
+ *           de inicio y el conductor ve una pantalla de bienvenida.
  */
 public final class AppNavegacion implements NavegacionAdmin {
 
@@ -76,8 +80,14 @@ public final class AppNavegacion implements NavegacionAdmin {
             ventanaLogin.dispose();
             ventanaLogin = null;
             entrarComoAdministrador();
+        } else if (usuario instanceof UsuarioConSaldo) {
+            // Estudiante y empleado comparten la misma pantalla de inicio; al cerrarla se vuelve al login.
+            ventanaLogin.dispose();
+            ventanaLogin = null;
+            new VentanaInicioUsuario((UsuarioConSaldo) usuario, new RutasDisponiblesController(itinerarios), this::mostrarLogin)
+                    .setVisible(true);
         } else {
-            // Estudiante, empleado y conductor aún no tienen pantallas propias: al cerrar la bienvenida se vuelve al login.
+            // El conductor aún no tiene pantalla propia: al cerrar la bienvenida se vuelve al login.
             ventanaLogin.dispose();
             ventanaLogin = null;
             new VentanaBienvenida(usuario, this::mostrarLogin).setVisible(true);
