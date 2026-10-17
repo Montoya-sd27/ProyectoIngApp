@@ -82,7 +82,7 @@ class PersistenciaArchivosTest {
 
         List<String> lineas = Files.readAllLines(usuarios);
         assertEquals(2, lineas.size());
-        assertEquals("USUARIO|Estudiante|Ana|Pérez|111|ana@ucv.ve|clave", lineas.get(0));
+        assertEquals("USUARIO|Estudiante|Ana|Pérez|111|ana@ucv.ve|clave|0.0", lineas.get(0));
 
         // "reinicio" de la aplicación: se vacía la memoria y se vuelve a cargar desde el archivo
         CargaDatosLogin.establecerOyente(null);
