@@ -6,4 +6,9 @@ public class Estudiante extends UsuarioConSaldo {
     public Estudiante(String nombre, String apellido, String cedula, String correo, String contrasena) {
         super(nombre, apellido, cedula, correo, contrasena, "Estudiante"); // su rol siempre sera estudiante
     }
+
+    // para recuperar a un estudiante guardado con su saldo
+    public Estudiante(String nombre, String apellido, String cedula, String correo, String contrasena, float saldo) {
+        super(nombre, apellido, cedula, correo, contrasena, "Estudiante", saldo);
+    }
 }

@@ -2,6 +2,7 @@ package com.transporte.app;
 
 import com.transporte.controller.AutobusController;
 import com.transporte.controller.ItinerarioController;
+import com.transporte.controller.RecargaController;
 import com.transporte.controller.RutasDisponiblesController;
 import com.transporte.controller.UsuarioAdminController;
 import com.transporte.model.Autobus;
@@ -42,6 +43,7 @@ public final class AppNavegacion implements NavegacionAdmin {
     private final FlotaModel flota = new FlotaModel();
     private final Catalogo catalogo = Catalogo.conDatosDemo(flota);
     private final ItinerarioRepositorio itinerarios;
+    private final RecargaController recarga;
 
     private VentanaLogin ventanaLogin;
     private ItinerarioView ventanaItinerarios;
@@ -54,6 +56,7 @@ public final class AppNavegacion implements NavegacionAdmin {
         persistencia.activarUsuarios();
         persistencia.activarUnidades(flota);
         itinerarios = persistencia.activarItinerarios(flota);
+        recarga = new RecargaController(persistencia.activarPagos());
     }
 
     public static synchronized AppNavegacion getInstance() {
@@ -84,8 +87,8 @@ public final class AppNavegacion implements NavegacionAdmin {
             // Estudiante y empleado comparten la misma pantalla de inicio; al cerrarla se vuelve al login.
             ventanaLogin.dispose();
             ventanaLogin = null;
-            new VentanaInicioUsuario((UsuarioConSaldo) usuario, new RutasDisponiblesController(itinerarios), this::mostrarLogin)
-                    .setVisible(true);
+            new VentanaInicioUsuario((UsuarioConSaldo) usuario, new RutasDisponiblesController(itinerarios), recarga,
+                    this::mostrarLogin).setVisible(true);
         } else {
             // El conductor aún no tiene pantalla propia: al cerrar la bienvenida se vuelve al login.
             ventanaLogin.dispose();

@@ -27,6 +27,11 @@ public class CargaDatosLogin {
     //  agregar un usuario nuevo a la lista
     public static void agregarUsuario(Usuario nuevoUsuario) {
         listaUsuarios.add(nuevoUsuario);
+        notificarCambio();
+    }
+
+    /** Avisa de que cambió algún dato de un usuario (por ejemplo su saldo) para que se guarde. */
+    public static void notificarCambio() {
         if (oyente != null) oyente.run();
     }
 

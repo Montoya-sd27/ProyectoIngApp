@@ -1,5 +1,6 @@
 package com.transporte.view;
 
+import com.transporte.controller.RecargaController;
 import com.transporte.controller.RutasDisponiblesController;
 import com.transporte.model.Itinerario;
 import com.transporte.model.RutaFactory.TipoRuta;
@@ -28,6 +29,7 @@ public class PanelInicioUsuario extends JPanel {
 
     private final UsuarioConSaldo usuario;
     private final RutasDisponiblesController rutas;
+    private final RecargaController recarga;
 
     private final BotonTipoRuta btnUrbana = new BotonTipoRuta("Ruta Urbana", "Área metropolitana");
     private final BotonTipoRuta btnExtraurbana = new BotonTipoRuta("Ruta Extraurbana", "Zonas periféricas");
@@ -37,9 +39,10 @@ public class PanelInicioUsuario extends JPanel {
     private final JLabel lblSaldo = new JLabel();
     private final EstiloUI.BotonRedondeado btnRecargar = EstiloUI.botonAmarillo("Recargar saldo");
 
-    public PanelInicioUsuario(UsuarioConSaldo usuario, RutasDisponiblesController rutas) {
+    public PanelInicioUsuario(UsuarioConSaldo usuario, RutasDisponiblesController rutas, RecargaController recarga) {
         this.usuario = usuario;
         this.rutas = rutas;
+        this.recarga = recarga;
         setLayout(new BorderLayout(0, 12));
         setBackground(EstiloUI.GRIS);
         setBorder(new EmptyBorder(16, 20, 16, 20));
@@ -228,12 +231,19 @@ public class PanelInicioUsuario extends JPanel {
         barra.setBorder(new EmptyBorder(12, 20, 12, 20));
         barra.add(lblSaldo);
         barra.add(btnRecargar);
+        btnRecargar.addActionListener(e -> abrirPagoMovil());
 
         // el FlowLayout se ajusta al contenido: la barra no se estira a todo el ancho
         JPanel contenedor = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         contenedor.setOpaque(false);
         contenedor.add(barra);
         return contenedor;
+    }
+
+    // abre los datos del pago móvil; al validarse un pago se actualiza el saldo que se ve en pantalla
+    private void abrirPagoMovil() {
+        new VentanaPagoMovil(SwingUtilities.getWindowAncestor(this), usuario, recarga, this::actualizarSaldo)
+                .setVisible(true);
     }
 
     /** Muestra en pantalla el saldo actual del usuario, por ejemplo "Saldo: Bs. 1.250,50". */

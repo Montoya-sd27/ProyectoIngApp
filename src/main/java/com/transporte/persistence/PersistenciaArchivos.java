@@ -12,6 +12,7 @@ import java.nio.file.Path;
  *   usuarios.txt  -> usuarios (registro e inicio de sesión)
  *   unidades.txt  -> unidades de la flota
  *   rutas.txt     -> itinerarios (ruta, chofer, unidad y horario)
+ *   pagos_movil.txt -> pagos móviles recibidos, contra los que se validan las recargas de saldo
  *
  * Cada método "activar..." primero lee el archivo (si existe) y deja los datos cargados;
  * desde ese momento cualquier cambio vuelve a escribir el archivo correspondiente.
@@ -25,6 +26,7 @@ public final class PersistenciaArchivos {
     public static final String ARCHIVO_USUARIOS = "usuarios.txt";
     public static final String ARCHIVO_UNIDADES = "unidades.txt";
     public static final String ARCHIVO_RUTAS = "rutas.txt";
+    public static final String ARCHIVO_PAGOS = "pagos_movil.txt";
 
     private final Path carpeta;
 
@@ -71,6 +73,17 @@ public final class PersistenciaArchivos {
         // si cambia una unidad (placa, modelo, estado...) los itinerarios que la usan se vuelven a guardar
         flota.agregarOyente(repositorio::persistir);
         return repositorio;
+    }
+
+    /** Deja listo el archivo de pagos móviles (si no existe lo crea con pagos de ejemplo) y lo devuelve. */
+    public PagoMovilArchivo activarPagos() {
+        PagoMovilArchivo pagos = new PagoMovilArchivo(carpeta.resolve(ARCHIVO_PAGOS));
+        try {
+            pagos.crearSiNoExiste();
+        } catch (UncheckedIOException e) {
+            System.err.println("[Persistencia] No se pudo crear el archivo de pagos: " + e.getMessage());
+        }
+        return pagos;
     }
 
     private static void guardarSinFallar(String que, Runnable guardado) {
