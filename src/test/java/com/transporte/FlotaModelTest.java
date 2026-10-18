@@ -1,4 +1,4 @@
-package com.transporte.model;
+package com.transporte;
 
 import com.transporte.model.Autobus;
 import com.transporte.model.FlotaModel;
@@ -31,7 +31,7 @@ public class FlotaModelTest {
         flota.agregarAutobus(bus);
 
         Autobus busActualizado = new Autobus("BUS-01", "Modelo-B", 50, "En Mantenimiento");
-        flota.modificarAutobus(0, busActualizado);
+        flota.actualizarAutobus(0, busActualizado);
 
         assertEquals("Modelo-B", flota.obtenerAutobus(0).getModelo());
         assertEquals(50, flota.obtenerAutobus(0).getCapacidad());

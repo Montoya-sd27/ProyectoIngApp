@@ -25,17 +25,14 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 import com.transporte.controller.UsuarioAdminController;
-<<<<<<< HEAD
 import com.transporte.controller.ValidadorUsuario;
-=======
->>>>>>> origin/main
 import com.transporte.model.ReglaNegocioException;
 import com.transporte.model.Usuario;
 
-/*  el administrador registra estudiantes, empleados, conductores y otros administradores. Los usuarios creados aquí pueden iniciar sesión después*/
+/*  el administrador registra estudiantes, empleados, conductores y otros administradores. Los usuarios creados aqui pueden iniciar sesion despues*/
 public class RegistroUsuarioAdminVentana extends JFrame {
 
-    private static final String[] COLUMNAS = {"Nombre", "Apellido", "Cédula", "Correo", "Rol"};
+    private static final String[] COLUMNAS = {"Nombre", "Apellido", "CÃ©dula", "Correo", "Rol"};
 
     private final UsuarioAdminController controller;
     private final NavegacionAdmin navegacion;
@@ -62,15 +59,12 @@ public class RegistroUsuarioAdminVentana extends JFrame {
             c.addActionListener(e -> registrar());   // ENTER registra
         }
         EstiloUI.estilizarCombo(cmbRol);
-<<<<<<< HEAD
         EstiloUI.limitarEntrada(txtNombre, ValidadorUsuario.NOMBRE_MAX, "[\\p{L}\\p{M} ]*");
         EstiloUI.limitarEntrada(txtApellido, ValidadorUsuario.NOMBRE_MAX, "[\\p{L}\\p{M} ]*");
         EstiloUI.limitarEntrada(txtCedula, ValidadorUsuario.CEDULA_MAX_DIGITOS, "\\d*");
-=======
->>>>>>> origin/main
         configurarTabla();
 
-        setDefaultCloseOperation(DISPOSE_ON_CLOSE);   // cerrar esta ventana no cierra la aplicación
+        setDefaultCloseOperation(DISPOSE_ON_CLOSE);   // cerrar esta ventana no cierra la aplicacion
         setSize(1000, 700);
         setMinimumSize(new Dimension(900, 640));
         setLocationRelativeTo(null);
@@ -102,12 +96,12 @@ public class RegistroUsuarioAdminVentana extends JFrame {
         formulario.setOpaque(false);
         formulario.add(EstiloUI.etiqueta("Nombre:"));
         formulario.add(EstiloUI.etiqueta("Apellido:"));
-        formulario.add(EstiloUI.etiqueta("Cédula:"));
+        formulario.add(EstiloUI.etiqueta("CÃ©dula:"));
         formulario.add(txtNombre);
         formulario.add(txtApellido);
         formulario.add(txtCedula);
         formulario.add(EstiloUI.etiqueta("Correo:"));
-        formulario.add(EstiloUI.etiqueta("Contraseña:"));
+        formulario.add(EstiloUI.etiqueta("ContraseÃ±a:"));
         formulario.add(EstiloUI.etiqueta("Rol:"));
         formulario.add(txtCorreo);
         formulario.add(txtClave);
@@ -203,7 +197,7 @@ public class RegistroUsuarioAdminVentana extends JFrame {
     }
 
     private void cerrarSesion() {
-        int r = JOptionPane.showConfirmDialog(this, "¿Desea cerrar sesión?", "Cerrar sesión",
+        int r = JOptionPane.showConfirmDialog(this, "Â¿Desea cerrar sesiÃ³n?", "Cerrar sesiÃ³n",
                 JOptionPane.YES_NO_OPTION);
         if (r == JOptionPane.YES_OPTION) navegacion.cerrarSesion();
     }

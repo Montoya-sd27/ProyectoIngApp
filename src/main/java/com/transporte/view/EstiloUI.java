@@ -7,14 +7,11 @@ import java.util.Locale;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
-<<<<<<< HEAD
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DocumentFilter;
 import javax.swing.text.JTextComponent;
-=======
->>>>>>> origin/main
 
 /** Paleta y utilidades de estilo compartidas por todas las vistas. */
 public final class EstiloUI {
@@ -37,7 +34,7 @@ public final class EstiloUI {
         return s.substring(0, 1).toUpperCase() + s.substring(1);
     }
 
-    /** Barra superior azul con el nombre de la app y botón "Cerrar sesión". */
+    /** Barra superior azul con el nombre de la app y botÃ³n "Cerrar sesiÃ³n". */
     public static JPanel encabezado(Runnable onCerrarSesion) {
         JPanel p = new JPanel(new BorderLayout());
         p.setBackground(AZUL);
@@ -49,7 +46,7 @@ public final class EstiloUI {
 
         p.add(titulo, BorderLayout.WEST);
         if (onCerrarSesion != null) {
-            BotonRedondeado cerrar = new BotonRedondeado("Cerrar sesión", AZUL, AMARILLO);
+            BotonRedondeado cerrar = new BotonRedondeado("Cerrar sesiÃ³n", AZUL, AMARILLO);
             cerrar.setForeground(AMARILLO);
             cerrar.addActionListener(e -> onCerrarSesion.run());
             p.add(cerrar, BorderLayout.EAST);
@@ -64,8 +61,7 @@ public final class EstiloUI {
         c.setBorder(new EmptyBorder(6, 8, 6, 8));
     }
 
-<<<<<<< HEAD
-        /** Limita lo que se puede escribir: solo caracteres que cumplan el patrón y hasta maxCaracteres. */
+        /** Limita lo que se puede escribir: solo caracteres que cumplan el patrÃ³n y hasta maxCaracteres. */
     public static void limitarEntrada(JTextComponent campo, int maxCaracteres, String patronPermitido) {
         ((AbstractDocument) campo.getDocument()).setDocumentFilter(new DocumentFilter() {
             @Override
@@ -87,8 +83,6 @@ public final class EstiloUI {
     }
 
 
-=======
->>>>>>> origin/main
     public static JLabel etiqueta(String texto) {
         JLabel l = new JLabel(texto);
         l.setForeground(AZUL);
@@ -102,7 +96,7 @@ public final class EstiloUI {
         c.setBorder(new LineBorder(GRIS, 4));
     }
 
-    /** Botón de esquinas redondeadas con borde del color indicado. */
+    /** BotÃ³n de esquinas redondeadas con borde del color indicado. */
     public static class BotonRedondeado extends JButton {
         private final Color fondo;
         private final Color borde;
@@ -138,14 +132,14 @@ public final class EstiloUI {
         return new BotonRedondeado(texto, VERDE, VERDE.darker().darker());
     }
 
-    /** Botón azul con texto blanco (acciones de navegación). */
+    /** BotÃ³n azul con texto blanco (acciones de navegaciÃ³n). */
     public static BotonRedondeado botonAzul(String texto) {
         BotonRedondeado b = new BotonRedondeado(texto, AZUL, AZUL);
         b.setForeground(Color.WHITE);
         return b;
     }
 
-    /** Botón amarillo (acciones secundarias). */
+    /** BotÃ³n amarillo (acciones secundarias). */
     public static BotonRedondeado botonAmarillo(String texto) {
         return new BotonRedondeado(texto, AMARILLO, AMARILLO.darker().darker());
     }
