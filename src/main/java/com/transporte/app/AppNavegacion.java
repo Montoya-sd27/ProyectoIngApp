@@ -49,6 +49,7 @@ public final class AppNavegacion implements NavegacionAdmin {
     private ItinerarioView ventanaItinerarios;
     private GestionFlotaVentana ventanaFlota;
     private RegistroUsuarioAdminVentana ventanaUsuarios;
+    private Usuario usuarioActual;   // quien inició sesión (el backoffice exige que sea Administrador)
 
     private AppNavegacion() {
         // Los datos se leen de la carpeta "datos" al arrancar y se guardan en cada cambio.
@@ -79,6 +80,7 @@ public final class AppNavegacion implements NavegacionAdmin {
 
     /** Se ejecuta cuando el login valida las credenciales: se enruta según el rol. */
     private void alAutenticar(Usuario usuario) {
+    usuarioActual = usuario;
         if (usuario instanceof Administrador) {
             ventanaLogin.dispose();
             ventanaLogin = null;
@@ -148,7 +150,7 @@ public final class AppNavegacion implements NavegacionAdmin {
             ventanaUsuarios.toFront();
             return;
         }
-        ventanaUsuarios = new RegistroUsuarioAdminVentana(new UsuarioAdminController(), this);
+        ventanaUsuarios = new RegistroUsuarioAdminVentana(new UsuarioAdminController(usuarioActual), this);
         ventanaUsuarios.setVisible(true);
     }
 
