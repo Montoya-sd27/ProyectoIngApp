@@ -33,24 +33,31 @@ public class FlotaModel {
 
     public void agregarAutobus(Autobus bus) throws IllegalArgumentException {
         if (bus == null) {
-            throw new IllegalArgumentException("El autobus no puede ser nulo.");
+            throw new IllegalArgumentException("El autobús no puede ser nulo.");
         }
+
+        // Validación de Placa
         if (bus.getPlaca() == null || bus.getPlaca().trim().isEmpty()) {
-            throw new IllegalArgumentException("La placa no puede estar vacia.");
+            throw new IllegalArgumentException("La placa no puede estar vacía.");
         }
         if (bus.getPlaca().trim().length() > 10) {
             throw new IllegalArgumentException("La placa no puede exceder los 10 caracteres.");
         }
+
+        // Validación de Modelo
         if (bus.getModelo() == null || bus.getModelo().trim().isEmpty()) {
-            throw new IllegalArgumentException("El modelo no puede estar vacio.");
+            throw new IllegalArgumentException("El modelo no puede estar vacío.");
         }
         if (bus.getModelo().trim().length() > 40) {
             throw new IllegalArgumentException("El modelo no puede exceder los 40 caracteres.");
         }
+
+        // Validación de Capacidad (lo coloco de 1 a 100 pasajeros)
         if (bus.getCapacidad() <= 0 || bus.getCapacidad() > 100) {
             throw new IllegalArgumentException("La capacidad de pasajeros debe estar entre 1 y 100.");
         }
 
+        // Estandarizar la placa a mayúsculas y sin espacios a los extremos
         String placaNormalizada = bus.getPlaca().trim().toUpperCase();
         bus.setPlaca(placaNormalizada);
 
@@ -77,23 +84,29 @@ public class FlotaModel {
 
     public void actualizarAutobus(int indice, Autobus bus) throws IllegalArgumentException {
         if (indice < 0 || indice >= listaAutobuses.size()) {
-            throw new IllegalArgumentException("Indice de unidad invalido.");
+            throw new IllegalArgumentException("Índice de unidad inválido.");
         }
         if (bus == null) {
-            throw new IllegalArgumentException("Los datos de actualizacion no pueden ser nulos.");
+            throw new IllegalArgumentException("Los datos de actualización no pueden ser nulos.");
         }
+
+        // Validación de Placa
         if (bus.getPlaca() == null || bus.getPlaca().trim().isEmpty()) {
-            throw new IllegalArgumentException("La placa no puede estar vacia.");
+            throw new IllegalArgumentException("La placa no puede estar vacía.");
         }
         if (bus.getPlaca().trim().length() > 10) {
             throw new IllegalArgumentException("La placa no puede exceder los 10 caracteres.");
         }
+
+        // Validación de Modelo
         if (bus.getModelo() == null || bus.getModelo().trim().isEmpty()) {
-            throw new IllegalArgumentException("El modelo no puede estar vacio.");
+            throw new IllegalArgumentException("El modelo no puede estar vacío.");
         }
         if (bus.getModelo().trim().length() > 40) {
             throw new IllegalArgumentException("El modelo no puede exceder los 40 caracteres.");
         }
+
+        // Validación de Capacidad (1 a 100 pasajeros)
         if (bus.getCapacidad() <= 0 || bus.getCapacidad() > 100) {
             throw new IllegalArgumentException("La capacidad de pasajeros debe estar entre 1 y 100.");
         }
@@ -107,6 +120,7 @@ public class FlotaModel {
             }
         }
 
+        // INTEGRACIÓN: se actualiza el MISMO objeto (no se reemplaza en la lista) para que los itinerarios que ya referencian esta unidad vean la placa/modelo/estado nuevos.
         Autobus existente = listaAutobuses.get(indice);
         existente.setPlaca(bus.getPlaca());
         existente.setModelo(bus.getModelo());
@@ -120,14 +134,16 @@ public class FlotaModel {
             listaAutobuses.remove(indice);
             notificarCambio();
         } else {
-            throw new IllegalArgumentException("No se pudo eliminar: indice fuera de rango.");
+            throw new IllegalArgumentException("No se pudo eliminar: índice fuera de rango.");
         }
     }
 
+    /** Registra una acción que se ejecuta cada vez que cambia la lista de unidades o alguna de ellas. */
     public void agregarOyente(Runnable oyente) {
         oyentes.add(oyente);
     }
 
+    /** Avisa a los oyentes de que hubo un cambio (también para cambios hechos directamente sobre un Autobus). */
     public void notificarCambio() {
         for (Runnable oyente : oyentes) {
             oyente.run();

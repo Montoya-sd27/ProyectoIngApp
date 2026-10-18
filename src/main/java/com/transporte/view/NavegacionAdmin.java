@@ -15,6 +15,9 @@ public interface NavegacionAdmin {
     /** Abre el backoffice de registro de usuarios. */
     void irABackofficeUsuarios();
 
+    /** Abre la pantalla de configuración de tarifas de cobro solidario (THU-001). */
+    void irAGestionTarifas();
+
     /** Cierra la sesión actual y vuelve al inicio de sesión. */
     void cerrarSesion();
 }

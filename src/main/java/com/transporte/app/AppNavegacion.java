@@ -14,6 +14,7 @@ import com.transporte.repository.Catalogo;
 import com.transporte.repository.ItinerarioRepositorio;
 import com.transporte.persistence.PersistenciaArchivos;
 import com.transporte.view.GestionFlotaVentana;
+import com.transporte.view.GestionTarifasVentana;
 import com.transporte.view.ItinerarioView;
 import com.transporte.view.NavegacionAdmin;
 import com.transporte.view.RegistroUsuarioAdminVentana;
@@ -30,7 +31,7 @@ import javax.swing.JOptionPane;
  * Es dueño de los datos compartidos (FlotaModel, repositorio de itinerarios) y decide
  * qué ventana se abre, de modo que ningún módulo llama directamente a las pantallas de otro.
  *
- *  - Login: {@link #mostrarLogin()} abre la ventana de inicio de sesión; al autenticarse, el
+ *   - Login: {@link #mostrarLogin()} abre la ventana de inicio de sesión; al autenticarse, el
  *           Administrador entra directo a Gestión de itinerarios (desde ahí llega a Gestión de unidades
  *           y al backoffice de registro de usuarios). El estudiante y el empleado entran a su pantalla
  *           de inicio y el conductor ve una pantalla de bienvenida.
@@ -49,7 +50,7 @@ public final class AppNavegacion implements NavegacionAdmin {
     private ItinerarioView ventanaItinerarios;
     private GestionFlotaVentana ventanaFlota;
     private RegistroUsuarioAdminVentana ventanaUsuarios;
-    private Usuario usuarioActual;   // quien inició sesión (el backoffice exige que sea Administrador)
+    private GestionTarifasVentana ventanaTarifas;
 
     private AppNavegacion() {
         // Los datos se leen de la carpeta "datos" al arrancar y se guardan en cada cambio.
@@ -80,7 +81,6 @@ public final class AppNavegacion implements NavegacionAdmin {
 
     /** Se ejecuta cuando el login valida las credenciales: se enruta según el rol. */
     private void alAutenticar(Usuario usuario) {
-    usuarioActual = usuario;
         if (usuario instanceof Administrador) {
             ventanaLogin.dispose();
             ventanaLogin = null;
@@ -150,15 +150,27 @@ public final class AppNavegacion implements NavegacionAdmin {
             ventanaUsuarios.toFront();
             return;
         }
-        ventanaUsuarios = new RegistroUsuarioAdminVentana(new UsuarioAdminController(usuarioActual), this);
+        ventanaUsuarios = new RegistroUsuarioAdminVentana(new UsuarioAdminController(), this);
         ventanaUsuarios.setVisible(true);
     }
 
-    /** Vuelve a itinerarios: cierra unidades y backoffice (si están abiertos) y trae itinerarios al frente. */
+    /** Abre la pantalla de configuración de tarifas de cobro solidario (THU-001). */
+    @Override
+    public void irAGestionTarifas() {
+        if (ventanaTarifas != null && ventanaTarifas.isDisplayable()) {
+            ventanaTarifas.toFront();
+            return;
+        }
+        ventanaTarifas = new GestionTarifasVentana(this::irAItinerarios);
+        ventanaTarifas.setVisible(true);
+    }
+
+    /** Vuelve a itinerarios: cierra unidades, backoffice y tarifas (si están abiertos) y trae itinerarios al frente. */
     @Override
     public void irAItinerarios() {
         if (ventanaFlota != null) { ventanaFlota.dispose(); ventanaFlota = null; }
         if (ventanaUsuarios != null) { ventanaUsuarios.dispose(); ventanaUsuarios = null; }
+        if (ventanaTarifas != null) { ventanaTarifas.dispose(); ventanaTarifas = null; }
         entrarComoAdministrador();
     }
 
@@ -166,6 +178,7 @@ public final class AppNavegacion implements NavegacionAdmin {
     public void cerrarSesion() {
         if (ventanaFlota != null) { ventanaFlota.dispose(); ventanaFlota = null; }
         if (ventanaUsuarios != null) { ventanaUsuarios.dispose(); ventanaUsuarios = null; }
+        if (ventanaTarifas != null) { ventanaTarifas.dispose(); ventanaTarifas = null; }
         if (ventanaItinerarios != null) { ventanaItinerarios.dispose(); ventanaItinerarios = null; }
         mostrarLogin();
     }

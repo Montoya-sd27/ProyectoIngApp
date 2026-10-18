@@ -27,8 +27,7 @@ import com.transporte.model.Itinerario;
 import com.transporte.model.ReglaNegocioException;
 import com.transporte.repository.ItinerarioObserver;
 
-
- /* lista de itinerarios, acciones Nuevo / Editar / Eliminar.
+/* lista de itinerarios, acciones Nuevo / Editar / Eliminar.
 Solo se refresca cuando hay cambio */
 public class ItinerarioView extends JFrame implements ItinerarioObserver {
 
@@ -104,10 +103,15 @@ public class ItinerarioView extends JFrame implements ItinerarioObserver {
         EstiloUI.BotonRedondeado usuarios = EstiloUI.botonAzul("Registrar usuario");
         usuarios.addActionListener(e -> navegacion.irABackofficeUsuarios());
 
+        // Botón agregado para THU-001
+        EstiloUI.BotonRedondeado tarifas = EstiloUI.botonAzul("Configurar tarifas");
+        tarifas.addActionListener(e -> navegacion.irAGestionTarifas());
+
         JPanel navegar = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 0));
         navegar.setOpaque(false);
         navegar.add(unidades);
         navegar.add(usuarios);
+        navegar.add(tarifas); // Agregado a la barra de navegación izquierda
 
         JPanel botones = new JPanel(new BorderLayout());
         botones.setOpaque(false);

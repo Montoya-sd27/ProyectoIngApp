@@ -1,8 +1,11 @@
 package com.transporte.persistence;
 
+import com.transporte.model.Administrador;
+import com.transporte.model.Empleado;
+import com.transporte.model.Estudiante;
 import com.transporte.model.Usuario;
 import com.transporte.model.UsuarioConSaldo;
-import com.transporte.model.UsuarioFactory;
+import com.transporte.model.UsuarioConductor;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -80,8 +83,14 @@ public final class UsuarioArchivo {
         ArchivoLineas.escribir(archivo, lineas);
     }
 
-private static Usuario crear(String rol, String nombre, String apellido, String cedula,
+    private static Usuario crear(String rol, String nombre, String apellido, String cedula,
                                  String correo, String contrasena, float saldo) {
-        return UsuarioFactory.crear(rol, nombre, apellido, cedula, correo, contrasena, saldo);
+        switch (rol) {
+            case "Administrador": return new Administrador(nombre, apellido, cedula, correo, contrasena);
+            case "Estudiante": return new Estudiante(nombre, apellido, cedula, correo, contrasena, saldo);
+            case "Empleado": return new Empleado(nombre, apellido, cedula, correo, contrasena, saldo);
+            case "Conductor": return new UsuarioConductor(nombre, apellido, cedula, correo, contrasena);
+            default: return null;
+        }
     }
 }

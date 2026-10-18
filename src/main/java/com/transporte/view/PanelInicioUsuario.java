@@ -1,11 +1,9 @@
 package com.transporte.view;
 
-import com.transporte.controller.CobroService;
 import com.transporte.controller.RecargaController;
 import com.transporte.controller.RutasDisponiblesController;
 import com.transporte.model.Itinerario;
 import com.transporte.model.RutaFactory.TipoRuta;
-import com.transporte.model.Ticket;
 import com.transporte.model.UsuarioConSaldo;
 import java.awt.*;
 import java.time.LocalTime;
@@ -191,32 +189,6 @@ public class PanelInicioUsuario extends JPanel {
 
         EstiloUI.BotonRedondeado reservar = EstiloUI.botonAmarillo("Reservar cupo");
         reservar.setAlignmentX(Component.RIGHT_ALIGNMENT);
-
-        ///procesar el cobro
-reservar.addActionListener(e -> {
-    try {
-        CobroService cobroService = new CobroService();
-        double tarifaBase = 10.0; // o it.getRuta().getTarifaBase()
-        
-        Ticket ticket = cobroService.procesarCobro(
-            usuario, 
-            it.getRuta().getDestino(), 
-            tarifaBase, 
-            usuario.getSaldo()
-        );
-        
-        // Calculamos el nuevo saldo en float para UsuarioConSaldo
-        float nuevoSaldo = (float) (usuario.getSaldo() - ticket.getMontoCobrado());
-        usuario.setSaldo(nuevoSaldo);
-        
-        actualizarSaldo();
-        
-        VentanaMisTickets.mostrarComprobanteTicket(this, ticket);
-        
-    } catch (Exception ex) {
-        JOptionPane.showMessageDialog(this, ex.getMessage(), "Atención", JOptionPane.WARNING_MESSAGE);
-    }
-});
 
         JPanel derecha = new JPanel();
         derecha.setLayout(new BoxLayout(derecha, BoxLayout.Y_AXIS));
