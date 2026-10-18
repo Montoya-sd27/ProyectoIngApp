@@ -27,7 +27,7 @@ El administrador configura la tarifa de cada ruta (urbana o extraurbana) en "Con
 
 tarifas.txt  TARIFA|idRuta|tarifaBase|pctEstudiante|pctEmpleado|pctPublico
 
-El archivo se lee en cada consulta, así que un cambio del administrador se aplica de inmediato al precio que ven los usuarios. Si una ruta aún no tiene tarifa configurada se usa la de por defecto (base 10, estudiante 50%, empleado 100%).
+El archivo se lee en cada consulta, así que un cambio del administrador se aplica de inmediato al precio que ven los usuarios. 
 
 Al pulsar "Reservar cupo", el estudiante o empleado ve una ventana con el precio total del viaje (tarifa base x porcentaje de su rol). Solo al pulsar "Pagar cupo" se descuenta el saldo (se guarda en usuarios.txt) y se emite el ticket digital, que se guarda en datos/tickets.txt:
 
