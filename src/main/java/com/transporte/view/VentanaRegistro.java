@@ -111,7 +111,7 @@ private void agregarCampo(JPanel panel, String texto, JComponent campo) {
     l.setAlignmentX(LEFT_ALIGNMENT); // Pega la etiqueta a la izquierda del campo
     campo.setAlignmentX(LEFT_ALIGNMENT);
 
-    // Definimos el tamaño fijo uniforme (320px de ancho)
+    // Definimos el tamaño fijo uniforme 
     Dimension tamanoFijo = new Dimension(320, 34);
     campo.setPreferredSize(tamanoFijo);
     campo.setMaximumSize(tamanoFijo);

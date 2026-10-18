@@ -4,7 +4,7 @@ import com.transporte.model.ReglaNegocioException;
 import com.transporte.model.Usuario;
 import java.util.List;
 
-/** Controlador del registro desde el login: delega en RegistroPublico. */
+//Controlador del registro desde el login: delega en RegistroPublico. 
 public class RegistroPublicoController {
 
     private final RegistroUsuario registro;

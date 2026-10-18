@@ -1,5 +1,6 @@
 package com.transporte.controller;
 
+import com.transporte.model.ReglaNegocioException;
 import com.transporte.model.Usuario;
 import com.transporte.model.UsuarioFactory;
 import java.util.ArrayList;
@@ -25,9 +26,9 @@ public class UsuarioAdminController {
         return roles;
     }
 
-    public void registrar(String nombre, String apellido, String cedula, String correo, String clave, String rol) {
-        UsuarioFactory.crear(rol, nombre, apellido, cedula, correo, clave, 0);
-    }
+  public void registrar(String nombre, String apellido, String cedula, String correo, String clave, String rol) throws ReglaNegocioException {
+    UsuarioFactory.crear(rol, nombre, apellido, cedula, correo, clave, 0);
+}
 
     public List<Usuario> listar() {
         return new ArrayList<>();
