@@ -3,6 +3,9 @@ package com.transporte.view;
 import com.transporte.controller.CobroService;
 import com.transporte.controller.RecargaController;
 import com.transporte.controller.RutasDisponiblesController;
+import com.transporte.controller.TarifaConfiguracionController;
+import com.transporte.model.ReglaNegocioException;
+import com.transporte.model.TarifaRuta;
 import com.transporte.model.Itinerario;
 import com.transporte.model.RutaFactory.TipoRuta;
 import com.transporte.model.Ticket;
@@ -20,7 +23,9 @@ import javax.swing.border.MatteBorder;
  *  - saludo con el nombre y el rol,
  *  - selector de tipo de ruta (urbana / extraurbana),
  *  - lista de rutas disponibles con sus cupos,
- *  - abajo a la izquierda, el saldo en Bs con el botón para recargarlo.
+ *  - al reservar un cupo se abre una ventana con el precio total y el botón "Pagar cupo"; el ticket
+ *    digital se emite solo al pagar,
+ *  - abajo a la izquierda, el saldo en Bs con el botón para recargarlo y el botón "Ver mis tickets".
  */
 public class PanelInicioUsuario extends JPanel {
 
@@ -32,6 +37,8 @@ public class PanelInicioUsuario extends JPanel {
     private final UsuarioConSaldo usuario;
     private final RutasDisponiblesController rutas;
     private final RecargaController recarga;
+    private final TarifaConfiguracionController tarifas;
+    private final CobroService cobro = new CobroService();
 
     private final BotonTipoRuta btnUrbana = new BotonTipoRuta("Ruta Urbana", "Área metropolitana");
     private final BotonTipoRuta btnExtraurbana = new BotonTipoRuta("Ruta Extraurbana", "Zonas periféricas");
@@ -40,11 +47,14 @@ public class PanelInicioUsuario extends JPanel {
     private final JScrollPane scrollRutas = new JScrollPane(listaRutas);
     private final JLabel lblSaldo = new JLabel();
     private final EstiloUI.BotonRedondeado btnRecargar = EstiloUI.botonAmarillo("Recargar saldo");
+    private final EstiloUI.BotonRedondeado btnMisTickets = EstiloUI.botonAzul("Ver mis tickets");
 
-    public PanelInicioUsuario(UsuarioConSaldo usuario, RutasDisponiblesController rutas, RecargaController recarga) {
+    public PanelInicioUsuario(UsuarioConSaldo usuario, RutasDisponiblesController rutas, RecargaController recarga,
+                              TarifaConfiguracionController tarifas) {
         this.usuario = usuario;
         this.rutas = rutas;
         this.recarga = recarga;
+        this.tarifas = tarifas;
         setLayout(new BorderLayout(0, 12));
         setBackground(EstiloUI.GRIS);
         setBorder(new EmptyBorder(16, 20, 16, 20));
@@ -192,31 +202,8 @@ public class PanelInicioUsuario extends JPanel {
         EstiloUI.BotonRedondeado reservar = EstiloUI.botonAmarillo("Reservar cupo");
         reservar.setAlignmentX(Component.RIGHT_ALIGNMENT);
 
-        ///procesar el cobro
-reservar.addActionListener(e -> {
-    try {
-        CobroService cobroService = new CobroService();
-        double tarifaBase = 10.0; // o it.getRuta().getTarifaBase()
-        
-        Ticket ticket = cobroService.procesarCobro(
-            usuario, 
-            it.getRuta().getDestino(), 
-            tarifaBase, 
-            usuario.getSaldo()
-        );
-        
-        // Calculamos el nuevo saldo en float para UsuarioConSaldo
-        float nuevoSaldo = (float) (usuario.getSaldo() - ticket.getMontoCobrado());
-        usuario.setSaldo(nuevoSaldo);
-        
-        actualizarSaldo();
-        
-        VentanaMisTickets.mostrarComprobanteTicket(this, ticket);
-        
-    } catch (Exception ex) {
-        JOptionPane.showMessageDialog(this, ex.getMessage(), "Atención", JOptionPane.WARNING_MESSAGE);
-    }
-});
+        // al reservar se abre la ventana con el precio total; el cobro y el ticket ocurren al pagar
+        reservar.addActionListener(e -> abrirPagoCupo(it));
 
         JPanel derecha = new JPanel();
         derecha.setLayout(new BoxLayout(derecha, BoxLayout.Y_AXIS));
@@ -249,23 +236,58 @@ reservar.addActionListener(e -> {
 
     // ---------- Saldo ----------
 
-    // abajo a la izquierda: saldo en Bs y, al lado, el botón de recarga
+    // abajo a la izquierda: saldo en Bs con el botón de recarga y, debajo, el botón "Ver mis tickets"
     private JPanel crearBarraSaldo() {
         lblSaldo.setFont(EstiloUI.FUENTE.deriveFont(Font.BOLD, 16f));
         lblSaldo.setForeground(EstiloUI.AZUL);
 
-        JPanel barra = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 0));
-        barra.setBackground(EstiloUI.BLANCO);
-        barra.setBorder(new EmptyBorder(12, 20, 12, 20));
-        barra.add(lblSaldo);
-        barra.add(btnRecargar);
+        JPanel filaSaldo = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 0));
+        filaSaldo.setOpaque(false);
+        filaSaldo.add(lblSaldo);
+        filaSaldo.add(btnRecargar);
+        filaSaldo.setAlignmentX(Component.LEFT_ALIGNMENT);
         btnRecargar.addActionListener(e -> abrirPagoMovil());
+
+        JPanel filaTickets = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 0));
+        filaTickets.setOpaque(false);
+        filaTickets.add(btnMisTickets);
+        filaTickets.setAlignmentX(Component.LEFT_ALIGNMENT);
+        btnMisTickets.addActionListener(e -> new VentanaMisTickets(usuario.getCorreo()).setVisible(true));
+
+        JPanel barra = new JPanel();
+        barra.setLayout(new BoxLayout(barra, BoxLayout.Y_AXIS));
+        barra.setBackground(EstiloUI.BLANCO);
+        barra.setBorder(new EmptyBorder(12, 8, 12, 20));
+        barra.add(filaSaldo);
+        barra.add(Box.createVerticalStrut(8));
+        barra.add(filaTickets);
 
         // el FlowLayout se ajusta al contenido: la barra no se estira a todo el ancho
         JPanel contenedor = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         contenedor.setOpaque(false);
         contenedor.add(barra);
         return contenedor;
+    }
+
+    // abre la ventana con el precio total del viaje para este usuario; el ticket se emite al pulsar "Pagar cupo"
+    private void abrirPagoCupo(Itinerario it) {
+        TarifaRuta tarifa;
+        try {
+            tarifa = tarifas.tarifaDe(it.getRuta().getIdRuta());   // lee la tarifa vigente: incluye los cambios del administrador
+        } catch (ReglaNegocioException ex) {
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Atención", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        String horario = textoHorario(it);
+        String titulo = it.getRuta().getIdRuta() + " " + it.getRuta().getDestino();
+        String descripcionRuta = it.getRuta().getIdRuta() + " " + it.getRuta().getOrigen() + " \u2192 "
+                + it.getRuta().getDestino() + " (" + horario + ")";
+
+        new DialogoPagoCupo(SwingUtilities.getWindowAncestor(this), usuario, titulo, it.getRuta().getOrigen(),
+                horario, descripcionRuta, tarifa, cobro, ticket -> {
+            actualizarSaldo();
+            VentanaMisTickets.mostrarComprobanteTicket(this, ticket);
+        }).setVisible(true);
     }
 
     // abre los datos del pago móvil; al validarse un pago se actualiza el saldo que se ve en pantalla

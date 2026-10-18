@@ -4,10 +4,12 @@ import com.transporte.controller.AutobusController;
 import com.transporte.controller.ItinerarioController;
 import com.transporte.controller.RecargaController;
 import com.transporte.controller.RutasDisponiblesController;
+import com.transporte.controller.TarifaConfiguracionController;
 import com.transporte.controller.UsuarioAdminController;
 import com.transporte.model.Autobus;
 import com.transporte.model.Administrador;
 import com.transporte.model.FlotaModel;
+import com.transporte.model.Ruta;
 import com.transporte.model.Usuario;
 import com.transporte.model.UsuarioConSaldo;
 import com.transporte.repository.Catalogo;
@@ -23,6 +25,8 @@ import com.transporte.view.VentanaInicioUsuario;
 import com.transporte.view.VentanaLogin;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
@@ -45,6 +49,7 @@ public final class AppNavegacion implements NavegacionAdmin {
     private final Catalogo catalogo = Catalogo.conDatosDemo(flota);
     private final ItinerarioRepositorio itinerarios;
     private final RecargaController recarga;
+    private final TarifaConfiguracionController tarifas;
 
     private VentanaLogin ventanaLogin;
     private ItinerarioView ventanaItinerarios;
@@ -60,6 +65,7 @@ public final class AppNavegacion implements NavegacionAdmin {
         persistencia.activarUnidades(flota);
         itinerarios = persistencia.activarItinerarios(flota);
         recarga = new RecargaController(persistencia.activarPagos());
+        tarifas = new TarifaConfiguracionController(this::rutasConfigurables, persistencia.activarTarifas());
     }
 
     public static synchronized AppNavegacion getInstance() {
@@ -68,6 +74,13 @@ public final class AppNavegacion implements NavegacionAdmin {
     }
 
     public FlotaModel getFlota() { return flota; }
+
+    /** Rutas urbanas y extraurbanas con tarifa configurable: las del catálogo y las que ya tienen itinerarios. */
+    private List<Ruta> rutasConfigurables() {
+        List<Ruta> todas = new ArrayList<>(catalogo.getRutas());
+        itinerarios.listar().forEach(it -> todas.add(it.getRuta()));
+        return todas;
+    }
 
     // ---------- Inicio de sesión ----------
     /** Abre la ventana de login (pantalla de arranque y destino de "Cerrar sesión"). */
@@ -92,7 +105,7 @@ public final class AppNavegacion implements NavegacionAdmin {
             ventanaLogin.dispose();
             ventanaLogin = null;
             new VentanaInicioUsuario((UsuarioConSaldo) usuario, new RutasDisponiblesController(itinerarios), recarga,
-                    this::mostrarLogin).setVisible(true);
+                    tarifas, this::mostrarLogin).setVisible(true);
         } else {
             // El conductor aún no tiene pantalla propia: al cerrar la bienvenida se vuelve al login.
             ventanaLogin.dispose();
@@ -163,7 +176,7 @@ public final class AppNavegacion implements NavegacionAdmin {
             ventanaTarifas.toFront();
             return;
         }
-        ventanaTarifas = new GestionTarifasVentana(this::irAItinerarios);
+        ventanaTarifas = new GestionTarifasVentana(this::irAItinerarios, tarifas);
         ventanaTarifas.setVisible(true);
     }
 

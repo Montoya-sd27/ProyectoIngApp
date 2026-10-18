@@ -13,6 +13,7 @@ import java.nio.file.Path;
  *   unidades.txt  -> unidades de la flota
  *   rutas.txt     -> itinerarios (ruta, chofer, unidad y horario)
  *   pagos_movil.txt -> pagos móviles recibidos, contra los que se validan las recargas de saldo
+ *   tarifas.txt   -> tarifa base y porcentaje por rol de cada ruta (urbana y extraurbana)
  *
  * Cada método "activar..." primero lee el archivo (si existe) y deja los datos cargados;
  * desde ese momento cualquier cambio vuelve a escribir el archivo correspondiente.
@@ -27,6 +28,7 @@ public final class PersistenciaArchivos {
     public static final String ARCHIVO_UNIDADES = "unidades.txt";
     public static final String ARCHIVO_RUTAS = "rutas.txt";
     public static final String ARCHIVO_PAGOS = "pagos_movil.txt";
+    public static final String ARCHIVO_TARIFAS = "tarifas.txt";
 
     private final Path carpeta;
 
@@ -84,6 +86,11 @@ public final class PersistenciaArchivos {
             System.err.println("[Persistencia] No se pudo crear el archivo de pagos: " + e.getMessage());
         }
         return pagos;
+    }
+
+    /** Archivo de tarifas por ruta. Se lee en cada consulta, así un cambio del administrador se ve de inmediato. */
+    public TarifaArchivo activarTarifas() {
+        return new TarifaArchivo(carpeta.resolve(ARCHIVO_TARIFAS));
     }
 
     private static void guardarSinFallar(String que, Runnable guardado) {

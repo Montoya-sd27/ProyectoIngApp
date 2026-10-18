@@ -20,3 +20,17 @@ El estudiante y el empleado recargan su saldo con el botón "Recargar saldo" de 
 pagos_movil.txt  PAGO|telefono|cedula|banco|ultimos4Referencia|monto|estado   (estado: PENDIENTE o ACREDITADO)
 
 Si existe un pago PENDIENTE con esos datos, su monto se suma al saldo y la línea pasa a ACREDITADO (no se puede usar dos veces). La primera vez que se ejecuta el programa, el archivo se crea con tres pagos de ejemplo; para simular otro pago basta con agregar una línea nueva.
+
+
+Tarifas por ruta y cobro de cupos
+El administrador configura la tarifa de cada ruta (urbana o extraurbana) en "Configurar tarifas": tarifa base en Bs y el porcentaje que paga cada rol (estudiante, empleado, público). Se guarda en datos/tarifas.txt:
+
+tarifas.txt  TARIFA|idRuta|tarifaBase|pctEstudiante|pctEmpleado|pctPublico
+
+El archivo se lee en cada consulta, así que un cambio del administrador se aplica de inmediato al precio que ven los usuarios. Si una ruta aún no tiene tarifa configurada se usa la de por defecto (base 10, estudiante 50%, empleado 100%).
+
+Al pulsar "Reservar cupo", el estudiante o empleado ve una ventana con el precio total del viaje (tarifa base x porcentaje de su rol). Solo al pulsar "Pagar cupo" se descuenta el saldo (se guarda en usuarios.txt) y se emite el ticket digital, que se guarda en datos/tickets.txt:
+
+tickets.txt  idTicket|correo|rol|ruta|monto|fechaHora
+
+El botón "Ver mis tickets" (abajo a la izquierda en la pantalla de inicio) abre la lista de tickets del usuario y muestra el último emitido.

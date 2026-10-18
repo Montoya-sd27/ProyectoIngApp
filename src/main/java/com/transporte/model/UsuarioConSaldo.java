@@ -29,4 +29,15 @@ public void setSaldo(float saldo) {
         }
         saldo += monto;
     }
+
+    // resta un monto (en Bs) del saldo; no permite dejarlo en negativo
+    public void descontar(float monto) {
+        if (!(monto >= 0)) {
+            throw new IllegalArgumentException("El monto a descontar no puede ser negativo.");
+        }
+        if (monto > saldo) {
+            throw new IllegalArgumentException("Saldo insuficiente.");
+        }
+        saldo -= monto;
+    }
 }

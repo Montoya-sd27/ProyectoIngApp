@@ -1,102 +1,85 @@
 package com.transporte.controller;
 
 import com.transporte.model.ReglaNegocioException;
-
-import java.io.*;
+import com.transporte.model.Ruta;
+import com.transporte.model.RutaExtraurbana;
+import com.transporte.model.RutaFactory.TipoRuta;
+import com.transporte.model.TarifaRuta;
+import com.transporte.persistence.TarifaArchivo;
+import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Supplier;
 
+/**
+ * Configuración de tarifas (administrador) y consulta de tarifas (cobro). Las tarifas de las rutas
+ * urbanas y extraurbanas se guardan en el mismo archivo (tarifas.txt), que se lee en cada consulta:
+ * en cuanto el administrador guarda un cambio, el siguiente precio que ve un usuario ya es el nuevo.
+ */
 public class TarifaConfiguracionController {
 
-    private String getRutaArchivo() {
-        String folder = System.getProperty("ruta.datos", "datos");
-        return folder + File.separator + "rutas.txt";
+    private final Supplier<List<Ruta>> rutas;
+    private final TarifaArchivo archivo;
+
+    /**
+     * @param rutas   de dónde salen las rutas que se pueden configurar (se consulta cada vez)
+     * @param archivo archivo donde se guardan las tarifas
+     */
+    public TarifaConfiguracionController(Supplier<List<Ruta>> rutas, TarifaArchivo archivo) {
+        this.rutas = rutas;
+        this.archivo = archivo;
     }
 
-    public List<String[]> obtenerRutasExtraurbanas() throws ReglaNegocioException {
-        File archivo = new File(getRutaArchivo());
-
-        if (!archivo.exists()) {
-            try {
-                if (archivo.getParentFile() != null) {
-                    archivo.getParentFile().mkdirs();
-                }
-                archivo.createNewFile();
-            } catch (IOException e) {
-                throw new ReglaNegocioException("No se pudo inicializar la estructura de datos.");
-            }
+    /** Rutas del tipo indicado (todas si es null), sin repetir ids. */
+    public List<Ruta> obtenerRutas(TipoRuta tipo) throws ReglaNegocioException {
+        List<Ruta> resultado = new ArrayList<>();
+        for (Ruta r : rutas.get()) {
+            if (tipo != null && tipoDe(r) != tipo) continue;
+            boolean repetida = resultado.stream().anyMatch(x -> x.getIdRuta().equalsIgnoreCase(r.getIdRuta()));
+            if (!repetida) resultado.add(r);
         }
-
-        List<String[]> extraurbanas = new ArrayList<>();
-
-        try (BufferedReader br = new BufferedReader(new FileReader(archivo))) {
-            String linea;
-            while ((linea = br.readLine()) != null) {
-                if (linea.trim().isEmpty()) continue;
-                String[] partes = linea.split("\\|");
-                if (partes.length >= 3 && "EXTRAURBANA".equalsIgnoreCase(partes[2].trim())) {
-                    extraurbanas.add(partes);
-                }
-            }
-        } catch (IOException e) {
-            throw new ReglaNegocioException("Error al leer el archivo de rutas.");
+        if (resultado.isEmpty()) {
+            throw new ReglaNegocioException("No hay rutas registradas en el sistema para configurar.");
         }
-
-        if (extraurbanas.isEmpty()) {
-            throw new ReglaNegocioException("No hay rutas extraurbanas registradas en el sistema para configurar.");
-        }
-
-        return extraurbanas;
+        return resultado;
     }
 
-    public void actualizarTarifaBaseRuta(String idRuta, double nuevaTarifa) throws ReglaNegocioException {
-        if (nuevaTarifa <= 0) {
+    /** Tarifa que el administrador guardó para la ruta, si la hay. */
+    public Optional<TarifaRuta> tarifaConfigurada(String idRuta) throws ReglaNegocioException {
+        try {
+            return archivo.buscar(idRuta);
+        } catch (UncheckedIOException e) {
+            throw new ReglaNegocioException("No se pudo leer el archivo de tarifas: " + e.getMessage());
+        }
+    }
+
+    /** Tarifa vigente de la ruta: la configurada o, si todavía no se configuró, la tarifa por defecto. */
+    public TarifaRuta tarifaDe(String idRuta) throws ReglaNegocioException {
+        return tarifaConfigurada(idRuta).orElseGet(() -> TarifaRuta.porDefecto(idRuta));
+    }
+
+    /** Guarda (o reemplaza) la tarifa base y el porcentaje que paga cada rol en la ruta. */
+    public TarifaRuta establecerTarifa(String idRuta, double base, double pctEstudiante, double pctEmpleado,
+                                       double pctPublico) throws ReglaNegocioException {
+        if (idRuta == null || idRuta.isBlank()) {
+            throw new ReglaNegocioException("Debe seleccionar una ruta.");
+        }
+        if (!(base > 0)) {
             throw new ReglaNegocioException("La tarifa base debe ser mayor a 0.");
         }
-
-        File archivo = new File(getRutaArchivo());
-        if (!archivo.exists()) {
-            throw new ReglaNegocioException("No se encontró el archivo de rutas.");
+        try {
+            TarifaRuta tarifa = new TarifaRuta(idRuta, base, pctEstudiante, pctEmpleado, pctPublico);
+            archivo.guardar(tarifa);
+            return tarifa;
+        } catch (IllegalArgumentException e) {
+            throw new ReglaNegocioException(e.getMessage());
+        } catch (UncheckedIOException e) {
+            throw new ReglaNegocioException("No se pudo guardar la tarifa: " + e.getMessage());
         }
+    }
 
-        List<String> lineasActualizadas = new ArrayList<>();
-        boolean encontrada = false;
-
-        try (BufferedReader br = new BufferedReader(new FileReader(archivo))) {
-            String linea;
-            while ((linea = br.readLine()) != null) {
-                if (linea.trim().isEmpty()) continue;
-                String[] partes = linea.split("\\|");
-                if (partes.length >= 4 && partes[3].trim().equals(idRuta)) {
-                    // Busca el campo que contiene el monto numérico y lo actualiza
-                    for (int i = partes.length - 1; i >= 0; i--) {
-                        try {
-                            Double.parseDouble(partes[i].trim());
-                            partes[i] = String.format("%.2f", nuevaTarifa).replace(",", ".");
-                            break;
-                        } catch (NumberFormatException ignored) {
-                        }
-                    }
-                    lineasActualizadas.add(String.join("|", partes));
-                    encontrada = true;
-                } else {
-                    lineasActualizadas.add(linea);
-                }
-            }
-        } catch (IOException e) {
-            throw new ReglaNegocioException("Error al procesar los datos de las rutas.");
-        }
-
-        if (!encontrada) {
-            throw new ReglaNegocioException("No se encontró la ruta seleccionada: " + idRuta);
-        }
-
-        try (PrintWriter pw = new PrintWriter(new FileWriter(archivo))) {
-            for (String l : lineasActualizadas) {
-                pw.println(l);
-            }
-        } catch (IOException e) {
-            throw new ReglaNegocioException("Error al guardar los cambios en el archivo.");
-        }
+    private static TipoRuta tipoDe(Ruta ruta) {
+        return ruta instanceof RutaExtraurbana ? TipoRuta.EXTRAURBANA : TipoRuta.URBANA;
     }
 }

@@ -2,6 +2,9 @@ package com.transporte.view;
 
 import com.transporte.controller.TarifaConfiguracionController;
 import com.transporte.model.ReglaNegocioException;
+import com.transporte.model.Ruta;
+import com.transporte.model.RutaFactory.TipoRuta;
+import com.transporte.model.TarifaRuta;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -13,6 +16,7 @@ import java.util.List;
 
 public class GestionTarifasVentana extends JFrame {
 
+    private JComboBox<String> cmbTipo;
     private JComboBox<String> cmbRutas;
     private JTextField txtTarifaBase;
 
@@ -28,20 +32,20 @@ public class GestionTarifasVentana extends JFrame {
 
     private final TarifaConfiguracionController controller;
     private final Runnable onVolver;
-    private List<String[]> listaRutas;
+    private List<Ruta> listaRutas = new java.util.ArrayList<>();
 
-    public GestionTarifasVentana(Runnable onVolver) {
+    public GestionTarifasVentana(Runnable onVolver, TarifaConfiguracionController controller) {
         super("Ruta Central - THU-001: Configuración de Tarifas (Admin)");
         this.onVolver = onVolver;
-        this.controller = new TarifaConfiguracionController();
+        this.controller = controller;
 
         initComponents();
         cargarRutas();
     }
 
     private void initComponents() {
-        setSize(720, 520);
-        setMinimumSize(new Dimension(660, 480));
+        setSize(740, 580);
+        setMinimumSize(new Dimension(680, 540));
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout());
@@ -57,7 +61,7 @@ public class GestionTarifasVentana extends JFrame {
         barraVolver.setOpaque(false);
         barraVolver.add(btnVolver);
 
-        JLabel lblTitulo = new JLabel("Configuración de Tarifas Extraurbanas", SwingConstants.CENTER);
+        JLabel lblTitulo = new JLabel("Configuración de Tarifas de Rutas", SwingConstants.CENTER);
         lblTitulo.setFont(EstiloUI.FUENTE_TITULO);
         lblTitulo.setForeground(EstiloUI.AZUL);
 
@@ -67,6 +71,10 @@ public class GestionTarifasVentana extends JFrame {
         cabecera.add(lblTitulo, BorderLayout.CENTER);
 
         // Formulario
+        cmbTipo = new JComboBox<>(new String[]{"Todas", "Urbanas", "Extraurbanas"});
+        EstiloUI.estilizarCombo(cmbTipo);
+        cmbTipo.addActionListener(e -> cargarRutas());
+
         cmbRutas = new JComboBox<>();
         EstiloUI.estilizarCombo(cmbRutas);
         cmbRutas.addActionListener(e -> alSeleccionarRuta());
@@ -96,10 +104,13 @@ public class GestionTarifasVentana extends JFrame {
         txtPctEmpleado.getDocument().addDocumentListener(docListener);
         txtPctPublico.getDocument().addDocumentListener(docListener);
 
-        JPanel pnlForm = new JPanel(new GridLayout(5, 2, 12, 10));
+        JPanel pnlForm = new JPanel(new GridLayout(6, 2, 12, 10));
         pnlForm.setOpaque(false);
 
-        pnlForm.add(EstiloUI.etiqueta("Seleccionar Ruta Extraurbana:"));
+        pnlForm.add(EstiloUI.etiqueta("Tipo de ruta:"));
+        pnlForm.add(cmbTipo);
+
+        pnlForm.add(EstiloUI.etiqueta("Seleccionar Ruta:"));
         pnlForm.add(cmbRutas);
 
         pnlForm.add(EstiloUI.etiqueta("Nueva Tarifa Base (Bs.):"));
@@ -159,38 +170,76 @@ public class GestionTarifasVentana extends JFrame {
         return p;
     }
 
+    private TipoRuta tipoElegido() {
+        switch (cmbTipo.getSelectedIndex()) {
+            case 1: return TipoRuta.URBANA;
+            case 2: return TipoRuta.EXTRAURBANA;
+            default: return null;   // todas
+        }
+    }
+
     private void cargarRutas() {
         try {
-            listaRutas = controller.obtenerRutasExtraurbanas();
-            cmbRutas.removeAllItems();
+            listaRutas = controller.obtenerRutas(tipoElegido());
+        } catch (ReglaNegocioException e) {
+            listaRutas = new java.util.ArrayList<>();
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Atención", JOptionPane.WARNING_MESSAGE);
+        }
 
-            for (String[] r : listaRutas) {
-                String origen = r.length > 4 ? r[4] : "";
-                String destino = r.length > 5 ? r[5] : "";
-                cmbRutas.addItem(r[3] + " - " + origen + " a " + destino);
-            }
+        // se quita el oyente un momento para que no dispare la carga de campos por cada ítem agregado
+        java.awt.event.ActionListener[] oyentes = cmbRutas.getActionListeners();
+        for (java.awt.event.ActionListener l : oyentes) cmbRutas.removeActionListener(l);
+        cmbRutas.removeAllItems();
+        for (Ruta r : listaRutas) {
+            cmbRutas.addItem(r.getIdRuta() + " - " + r.getOrigen() + " a " + r.getDestino()
+                    + " (" + r.getTipo() + ")");
+        }
+        for (java.awt.event.ActionListener l : oyentes) cmbRutas.addActionListener(l);
 
-            if (!listaRutas.isEmpty()) {
-                alSeleccionarRuta();
-            }
+        if (!listaRutas.isEmpty()) {
+            cmbRutas.setSelectedIndex(0);
+            alSeleccionarRuta();
+        } else {
+            limpiarCampos();
+        }
+    }
+
+    // al elegir una ruta se muestra su tarifa guardada; si todavía no se configuró, los campos quedan vacíos
+    private void alSeleccionarRuta() {
+        int idx = cmbRutas.getSelectedIndex();
+        if (idx < 0 || idx >= listaRutas.size()) return;
+
+        limpiarCampos();
+        try {
+            controller.tarifaConfigurada(listaRutas.get(idx).getIdRuta()).ifPresent(t -> {
+                txtTarifaBase.setText(numero(t.getBase()));
+                txtPctEstudiante.setText(numero(t.getPctEstudiante()));
+                txtPctEmpleado.setText(numero(t.getPctEmpleado()));
+                txtPctPublico.setText(numero(t.getPctPublico()));
+            });
         } catch (ReglaNegocioException e) {
             JOptionPane.showMessageDialog(this, e.getMessage(), "Atención", JOptionPane.WARNING_MESSAGE);
         }
     }
 
-    private void alSeleccionarRuta() {
-        int idx = cmbRutas.getSelectedIndex();
-        if (idx < 0 || idx >= listaRutas.size()) return;
-
-        // Limpia todos los campos para que no aparezca nada por defecto
+    private void limpiarCampos() {
         txtTarifaBase.setText("");
         txtPctEstudiante.setText("");
         txtPctEmpleado.setText("");
         txtPctPublico.setText("");
-
         lblCalcEstudiante.setText("Bs. 0.00");
         lblCalcEmpleado.setText("Bs. 0.00");
         lblCalcPublico.setText("Bs. 0.00");
+    }
+
+    // 50.0 -> "50"; 12.5 -> "12.5"
+    private static String numero(double v) {
+        return v == Math.rint(v) ? String.valueOf((long) v) : String.valueOf(v);
+    }
+
+    // acepta coma o punto como separador decimal
+    private static double leerNumero(String texto) {
+        return Double.parseDouble(texto.trim().replace(',', '.'));
     }
 
     private void recalcularAlEscribir() {
@@ -198,7 +247,7 @@ public class GestionTarifasVentana extends JFrame {
         try {
             String strBase = txtTarifaBase.getText().trim();
             if (!strBase.isEmpty()) {
-                base = Double.parseDouble(strBase);
+                base = leerNumero(strBase);
             }
         } catch (NumberFormatException ignored) {
         }
@@ -215,7 +264,7 @@ public class GestionTarifasVentana extends JFrame {
                 lblCalc.setText("Bs. 0.00");
                 return;
             }
-            double pct = Double.parseDouble(strPct);
+            double pct = leerNumero(strPct);
             if (pct < 0 || pct > 100) {
                 lblCalc.setText("Inválido");
                 return;
@@ -230,37 +279,35 @@ public class GestionTarifasVentana extends JFrame {
     private void guardarTarifa() {
         try {
             int idx = cmbRutas.getSelectedIndex();
-            if (idx < 0) throw new ReglaNegocioException("Debe seleccionar una ruta.");
+            if (idx < 0 || idx >= listaRutas.size()) throw new ReglaNegocioException("Debe seleccionar una ruta.");
 
-            String idRuta = listaRutas.get(idx)[3];
+            String idRuta = listaRutas.get(idx).getIdRuta();
             String textBase = txtTarifaBase.getText().trim();
 
             if (textBase.isEmpty()) {
                 throw new ReglaNegocioException("Ingrese un monto para la tarifa base.");
             }
 
-            double nuevaTarifa = Double.parseDouble(textBase);
+            double nuevaTarifa = leerNumero(textBase);
 
             // Validar porcentajes requeridos (0 a 100%)
             double pctEst = validarPorcentaje(txtPctEstudiante.getText().trim(), "Estudiante");
             double pctEmp = validarPorcentaje(txtPctEmpleado.getText().trim(), "Empleado");
             double pctPub = validarPorcentaje(txtPctPublico.getText().trim(), "Público General");
 
-            controller.actualizarTarifaBaseRuta(idRuta, nuevaTarifa);
+            TarifaRuta t = controller.establecerTarifa(idRuta, nuevaTarifa, pctEst, pctEmp, pctPub);
 
             JOptionPane.showMessageDialog(this,
-                    String.format("Tarifa establecida con éxito\n\n" +
+                    String.format("Tarifa establecida con éxito para %s\n\n" +
                                   "Tarifa Base: Bs. %.2f\n" +
                                   "• Estudiante (%.1f%%): Bs. %.2f\n" +
                                   "• Empleado (%.1f%%): Bs. %.2f\n" +
                                   "• Público (%.1f%%): Bs. %.2f",
-                            nuevaTarifa,
-                            pctEst, nuevaTarifa * (pctEst / 100.0),
-                            pctEmp, nuevaTarifa * (pctEmp / 100.0),
-                            pctPub, nuevaTarifa * (pctPub / 100.0)),
+                            idRuta, t.getBase(),
+                            t.getPctEstudiante(), t.precioPara("ESTUDIANTE"),
+                            t.getPctEmpleado(), t.precioPara("EMPLEADO"),
+                            t.getPctPublico(), t.precioPara("PUBLICO")),
                     "Éxito", JOptionPane.INFORMATION_MESSAGE);
-
-            cargarRutas();
 
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(this, "Ingrese un monto numérico válido.", "Error de Formato", JOptionPane.ERROR_MESSAGE);
@@ -274,7 +321,7 @@ public class GestionTarifasVentana extends JFrame {
             throw new ReglaNegocioException("Ingrese el porcentaje para " + perfil + ".");
         }
         try {
-            double val = Double.parseDouble(texto);
+            double val = leerNumero(texto);
             if (val < 0 || val > 100) {
                 throw new ReglaNegocioException("El porcentaje para " + perfil + " debe estar entre 0 y 100.");
             }
