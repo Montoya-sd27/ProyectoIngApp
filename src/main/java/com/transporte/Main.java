@@ -10,7 +10,7 @@ import com.transporte.model.FlotaModel;
 public class Main {
 
     
-    private static final boolean CARGAR_DATOS_DEMO = false;
+    private static final boolean CARGAR_DATOS_DEMO = true;
 
     public static void main(String[] args) {
         // Al crearse, AppNavegacion carga los datos guardados (usuarios, unidades y rutas).

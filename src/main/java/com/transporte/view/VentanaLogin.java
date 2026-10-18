@@ -1,6 +1,7 @@
 package com.transporte.view;
 
 import com.transporte.controller.LoginController;
+import com.transporte.controller.RegistroPublicoController;
 import com.transporte.model.Usuario;
 import java.util.function.Consumer;
 
@@ -97,6 +98,41 @@ public class VentanaLogin extends JFrame {
             }
         });
 
+        // registro de cuentas nuevas (estudiante, empleado o conductor; el administrador lo crea otro administrador)
+        JLabel lblSinCuenta = new JLabel("¿No tienes cuenta?", SwingConstants.CENTER);
+        lblSinCuenta.setFont(new Font("Arial", Font.PLAIN, 13));
+        lblSinCuenta.setForeground(Color.BLACK);
+        lblSinCuenta.setBounds(40, 350, 290, 20);
+        panelFormulario.add(lblSinCuenta);
+
+        JButton btnRegistrarse = new JButton("Registrarse");
+        btnRegistrarse.setFont(new Font("Arial", Font.BOLD, 14));
+        btnRegistrarse.setBackground(colorAzulFondo);
+        btnRegistrarse.setForeground(Color.WHITE);
+        btnRegistrarse.setFocusPainted(false);
+        btnRegistrarse.setBorder(null);
+        btnRegistrarse.setBounds(40, 375, 290, 38);
+        panelFormulario.add(btnRegistrarse);
+        btnRegistrarse.addActionListener(e -> accionRegistrarse());
+        
+
+    }
+
+    // abre el registro; si se creó la cuenta, deja el correo escrito para entrar directo
+    private void accionRegistrarse() {
+        try {
+            VentanaRegistro registro = new VentanaRegistro(this, new RegistroPublicoController());
+            registro.setVisible(true);   // es modal: sigue aquí cuando se cierra
+            if (registro.getCorreoRegistrado() != null) {
+                txtCorreoLogin.setText(registro.getCorreoRegistrado());
+                txtPassLogin.setText("");
+                txtPassLogin.requestFocusInWindow();
+            }
+        } catch (Throwable ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error al abrir el registro: " + ex,
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     // ingresar

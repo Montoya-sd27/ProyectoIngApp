@@ -25,6 +25,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 import com.transporte.controller.UsuarioAdminController;
+import com.transporte.controller.ValidadorUsuario;
 import com.transporte.model.ReglaNegocioException;
 import com.transporte.model.Usuario;
 
@@ -58,6 +59,9 @@ public class RegistroUsuarioAdminVentana extends JFrame {
             c.addActionListener(e -> registrar());   // ENTER registra
         }
         EstiloUI.estilizarCombo(cmbRol);
+        EstiloUI.limitarEntrada(txtNombre, ValidadorUsuario.NOMBRE_MAX, "[\\p{L}\\p{M} ]*");
+        EstiloUI.limitarEntrada(txtApellido, ValidadorUsuario.NOMBRE_MAX, "[\\p{L}\\p{M} ]*");
+        EstiloUI.limitarEntrada(txtCedula, ValidadorUsuario.CEDULA_MAX_DIGITOS, "\\d*");
         configurarTabla();
 
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);   // cerrar esta ventana no cierra la aplicación

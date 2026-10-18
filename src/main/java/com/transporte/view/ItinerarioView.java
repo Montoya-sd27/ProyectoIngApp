@@ -27,7 +27,8 @@ import com.transporte.model.Itinerario;
 import com.transporte.model.ReglaNegocioException;
 import com.transporte.repository.ItinerarioObserver;
 
-/* lista de itinerarios, acciones Nuevo / Editar / Eliminar.
+
+ /* lista de itinerarios, acciones Nuevo / Editar / Eliminar.
 Solo se refresca cuando hay cambio */
 public class ItinerarioView extends JFrame implements ItinerarioObserver {
 
@@ -111,7 +112,7 @@ public class ItinerarioView extends JFrame implements ItinerarioObserver {
         navegar.setOpaque(false);
         navegar.add(unidades);
         navegar.add(usuarios);
-        navegar.add(tarifas); // Agregado a la barra de navegación izquierda
+        navegar.add(tarifas);
 
         JPanel botones = new JPanel(new BorderLayout());
         botones.setOpaque(false);

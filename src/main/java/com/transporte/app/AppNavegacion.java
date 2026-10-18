@@ -31,7 +31,7 @@ import javax.swing.JOptionPane;
  * Es dueño de los datos compartidos (FlotaModel, repositorio de itinerarios) y decide
  * qué ventana se abre, de modo que ningún módulo llama directamente a las pantallas de otro.
  *
- *   - Login: {@link #mostrarLogin()} abre la ventana de inicio de sesión; al autenticarse, el
+ *  - Login: {@link #mostrarLogin()} abre la ventana de inicio de sesión; al autenticarse, el
  *           Administrador entra directo a Gestión de itinerarios (desde ahí llega a Gestión de unidades
  *           y al backoffice de registro de usuarios). El estudiante y el empleado entran a su pantalla
  *           de inicio y el conductor ve una pantalla de bienvenida.
@@ -51,6 +51,7 @@ public final class AppNavegacion implements NavegacionAdmin {
     private GestionFlotaVentana ventanaFlota;
     private RegistroUsuarioAdminVentana ventanaUsuarios;
     private GestionTarifasVentana ventanaTarifas;
+    private Usuario usuarioActual;   // quien inició sesión (el backoffice exige que sea Administrador)
 
     private AppNavegacion() {
         // Los datos se leen de la carpeta "datos" al arrancar y se guardan en cada cambio.
@@ -81,6 +82,7 @@ public final class AppNavegacion implements NavegacionAdmin {
 
     /** Se ejecuta cuando el login valida las credenciales: se enruta según el rol. */
     private void alAutenticar(Usuario usuario) {
+    usuarioActual = usuario;
         if (usuario instanceof Administrador) {
             ventanaLogin.dispose();
             ventanaLogin = null;
@@ -150,7 +152,7 @@ public final class AppNavegacion implements NavegacionAdmin {
             ventanaUsuarios.toFront();
             return;
         }
-        ventanaUsuarios = new RegistroUsuarioAdminVentana(new UsuarioAdminController(), this);
+        ventanaUsuarios = new RegistroUsuarioAdminVentana(new UsuarioAdminController(usuarioActual), this);
         ventanaUsuarios.setVisible(true);
     }
 
