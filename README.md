@@ -19,7 +19,7 @@ El estudiante y el empleado recargan su saldo con el botón "Recargar saldo" de 
 
 pagos_movil.txt  PAGO|telefono|cedula|banco|ultimos4Referencia|monto|estado   (estado: PENDIENTE o ACREDITADO)
 
-Si existe un pago PENDIENTE con esos datos, su monto se suma al saldo y la línea pasa a ACREDITADO (no se puede usar dos veces). La primera vez que se ejecuta el programa, el archivo se crea con tres pagos de ejemplo; para simular otro pago basta con agregar una línea nueva.
+Si existe un pago PENDIENTE con esos datos, su monto se suma al saldo y la línea pasa a ACREDITADO (no se puede usar dos veces). Ejecutamos con pagos por defecto como con conductores
 
 
 Tarifas por ruta y cobro de cupos
@@ -33,4 +33,5 @@ Al pulsar "Reservar cupo", el estudiante o empleado ve una ventana con el precio
 
 tickets.txt  idTicket|correo|rol|ruta|monto|fechaHora
 
-El botón "Ver mis tickets" (abajo a la izquierda en la pantalla de inicio) abre la lista de tickets del usuario y muestra el último emitido.
+
+
