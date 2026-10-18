@@ -19,13 +19,21 @@ class UsuarioAdminControllerTest {
         CargaDatosLogin.reiniciar();
         login = new LoginController();
         login.crearAdministradorPorDefecto();
+<<<<<<< HEAD
         backoffice = new UsuarioAdminController(login, CargaDatosLogin.buscarPorCorreo(LoginController.ADMIN_CORREO));
+=======
+        backoffice = new UsuarioAdminController(login);
+>>>>>>> origin/main
     }
 
     // 1. Un usuario registrado desde el backoffice puede iniciar sesión después
     @Test
     void usuarioRegistradoEnBackofficePuedeIniciarSesion() throws ReglaNegocioException {
+<<<<<<< HEAD
         backoffice.registrar("Ana", "Lopez", "1000001", "ana@ucv.ve", "clave", "Estudiante");
+=======
+        backoffice.registrar("Ana", "Lopez", "V-1", "ana@ucv.ve", "clave", "Estudiante");
+>>>>>>> origin/main
 
         Usuario u = login.iniciarSesion("ana@ucv.ve", "clave");
 
@@ -37,10 +45,17 @@ class UsuarioAdminControllerTest {
     // 2. Cada rol registrable crea su subclase
     @Test
     void registraLosCuatroRolesConSuSubclase() throws ReglaNegocioException {
+<<<<<<< HEAD
         backoffice.registrar("Ana", "Lopez", "1000001", "a@ucv.ve", "x", "Estudiante");
         backoffice.registrar("Beto", "Mora", "1000002", "b@ucv.ve", "x", "Empleado");
         backoffice.registrar("Carla", "Ruiz", "1000003", "c@ucv.ve", "x", "Conductor");
         backoffice.registrar("Daniel", "Paz", "1000004", "d@ucv.ve", "x", "Administrador");
+=======
+        backoffice.registrar("A", "A", "1", "a@ucv.ve", "x", "Estudiante");
+        backoffice.registrar("B", "B", "2", "b@ucv.ve", "x", "Empleado");
+        backoffice.registrar("C", "C", "3", "c@ucv.ve", "x", "Conductor");
+        backoffice.registrar("D", "D", "4", "d@ucv.ve", "x", "Administrador");
+>>>>>>> origin/main
 
         assertTrue(login.iniciarSesion("d@ucv.ve", "x") instanceof Administrador);
         assertTrue(login.iniciarSesion("a@ucv.ve", "x") instanceof Estudiante);
@@ -52,11 +67,19 @@ class UsuarioAdminControllerTest {
     @Test
     void rechazaCamposVacios() {
         assertThrows(ReglaNegocioException.class,
+<<<<<<< HEAD
                 () -> backoffice.registrar("", "Lopez", "1000001", "ana@ucv.ve", "clave", "Estudiante"));
         assertThrows(ReglaNegocioException.class,
                 () -> backoffice.registrar("Ana", "Lopez", "   ", "ana@ucv.ve", "clave", "Estudiante"));
         assertThrows(ReglaNegocioException.class,
                 () -> backoffice.registrar("Ana", "Lopez", "1000001", "ana@ucv.ve", "", "Estudiante"));
+=======
+                () -> backoffice.registrar("", "Lopez", "V-1", "ana@ucv.ve", "clave", "Estudiante"));
+        assertThrows(ReglaNegocioException.class,
+                () -> backoffice.registrar("Ana", "Lopez", "   ", "ana@ucv.ve", "clave", "Estudiante"));
+        assertThrows(ReglaNegocioException.class,
+                () -> backoffice.registrar("Ana", "Lopez", "V-1", "ana@ucv.ve", "", "Estudiante"));
+>>>>>>> origin/main
         assertThrows(ReglaNegocioException.class,
                 () -> backoffice.registrar(null, null, null, null, null, "Estudiante"));
     }
@@ -65,11 +88,16 @@ class UsuarioAdminControllerTest {
     @Test
     void rechazaCorreoConFormatoInvalido() {
         ReglaNegocioException ex = assertThrows(ReglaNegocioException.class,
+<<<<<<< HEAD
                 () -> backoffice.registrar("Ana", "Lopez", "1000001", "ana.ucv.ve", "clave", "Estudiante"));
+=======
+                () -> backoffice.registrar("Ana", "Lopez", "V-1", "ana.ucv.ve", "clave", "Estudiante"));
+>>>>>>> origin/main
         assertTrue(ex.getMessage().toLowerCase().contains("correo"));
         assertNull(login.iniciarSesion("ana.ucv.ve", "clave"));
     }
 
+<<<<<<< HEAD
     // 4b. Cualquier correo usable se acepta (no solo @ucv.ve) y los inusables se rechazan
     @Test
     void validaCualquierCorreoUsable() throws ReglaNegocioException {
@@ -99,17 +127,33 @@ class UsuarioAdminControllerTest {
                 () -> backoffice.registrar("Otra", "Persona", "1000002", "ANA@UCV.VE", "clave", "Empleado"));
         assertThrows(ReglaNegocioException.class,
                 () -> backoffice.registrar("Otra", "Persona", "1000001", "otra@ucv.ve", "clave", "Empleado"));
+=======
+    // 5. Correo o cédula repetidos
+    @Test
+    void rechazaCorreoOCedulaRepetidos() throws ReglaNegocioException {
+        backoffice.registrar("Ana", "Lopez", "V-1", "ana@ucv.ve", "clave", "Estudiante");
+
+        assertThrows(ReglaNegocioException.class,
+                () -> backoffice.registrar("Otra", "Persona", "V-2", "ANA@UCV.VE", "clave", "Empleado"));
+        assertThrows(ReglaNegocioException.class,
+                () -> backoffice.registrar("Otra", "Persona", "V-1", "otra@ucv.ve", "clave", "Empleado"));
+>>>>>>> origin/main
         assertEquals(2, backoffice.listar().size(), "Solo el admin por defecto y Ana");
     }
 
     // 6. Un administrador nuevo creado desde el backoffice puede entrar; un rol inventado o vacío se rechaza
     @Test
     void registraAdministradorYRechazaRolesDesconocidos() throws ReglaNegocioException {
+<<<<<<< HEAD
         backoffice.registrar("Pedro", "Perez", "1000005", "pedro@ucv.ve", "clave", "Administrador");
+=======
+        backoffice.registrar("Pedro", "Perez", "V-5", "pedro@ucv.ve", "clave", "Administrador");
+>>>>>>> origin/main
         Usuario nuevoAdmin = login.iniciarSesion("pedro@ucv.ve", "clave");
         assertTrue(nuevoAdmin instanceof Administrador, "El nuevo administrador debe poder iniciar sesion");
 
         assertThrows(ReglaNegocioException.class,
+<<<<<<< HEAD
                 () -> backoffice.registrar("Pedro", "Perez", "1000005", "pedro@ucv.ve", "clave", "Pasajero"));
         assertThrows(ReglaNegocioException.class,
                 () -> backoffice.registrar("Pedro", "Perez", "1000005", "pedro@ucv.ve", "clave", null));
@@ -123,6 +167,20 @@ class UsuarioAdminControllerTest {
 
         assertEquals("Luis Alberto", creado.getNombre());
         assertEquals("1000003", creado.getCedula());
+=======
+                () -> backoffice.registrar("Pedro", "Perez", "V-5", "pedro@ucv.ve", "clave", "Pasajero"));
+        assertThrows(ReglaNegocioException.class,
+                () -> backoffice.registrar("Pedro", "Perez", "V-5", "pedro@ucv.ve", "clave", null));
+        assertEquals(2, backoffice.listar().size(), "Solo el admin por defecto y Pedro");
+    }
+
+    // 7. Se quitan los espacios sobrantes de nombre y correo
+    @Test
+    void recortaEspaciosDeLosDatos() throws ReglaNegocioException {
+        Usuario creado = backoffice.registrar("  Luis ", " Mora ", " V-3 ", "  luis@ucv.ve ", "clave", "Conductor");
+
+        assertEquals("Luis", creado.getNombre());
+>>>>>>> origin/main
         assertEquals("luis@ucv.ve", creado.getCorreo());
         assertNotNull(login.iniciarSesion("luis@ucv.ve", "clave"));
     }
@@ -131,7 +189,11 @@ class UsuarioAdminControllerTest {
     @Test
     void listarMuestraLosUsuariosYEsDeSoloLectura() throws ReglaNegocioException {
         assertEquals(1, backoffice.listar().size(), "Al inicio solo existe el administrador");
+<<<<<<< HEAD
         backoffice.registrar("Ana", "Lopez", "1000001", "ana@ucv.ve", "clave", "Estudiante");
+=======
+        backoffice.registrar("Ana", "Lopez", "V-1", "ana@ucv.ve", "clave", "Estudiante");
+>>>>>>> origin/main
 
         assertEquals(2, backoffice.listar().size());
         assertThrows(UnsupportedOperationException.class, () -> backoffice.listar().clear());
@@ -142,6 +204,7 @@ class UsuarioAdminControllerTest {
     void rolesDisponiblesSonLosCuatroRoles() {
         assertEquals(java.util.List.of("Estudiante", "Empleado", "Conductor", "Administrador"), backoffice.rolesDisponibles());
     }
+<<<<<<< HEAD
 
     // 10. Nombre y apellido: solo letras (con tildes, ñ y espacios entre palabras)
     @Test
@@ -200,3 +263,6 @@ class UsuarioAdminControllerTest {
         assertEquals(1, backoffice.listar().size(), "Solo el administrador por defecto");
     }
 }
+=======
+}
+>>>>>>> origin/main

@@ -7,11 +7,14 @@ import java.util.Locale;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
+<<<<<<< HEAD
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DocumentFilter;
 import javax.swing.text.JTextComponent;
+=======
+>>>>>>> origin/main
 
 /** Paleta y utilidades de estilo compartidas por todas las vistas. */
 public final class EstiloUI {
@@ -61,6 +64,7 @@ public final class EstiloUI {
         c.setBorder(new EmptyBorder(6, 8, 6, 8));
     }
 
+<<<<<<< HEAD
         /** Limita lo que se puede escribir: solo caracteres que cumplan el patrón y hasta maxCaracteres. */
     public static void limitarEntrada(JTextComponent campo, int maxCaracteres, String patronPermitido) {
         ((AbstractDocument) campo.getDocument()).setDocumentFilter(new DocumentFilter() {
@@ -83,6 +87,8 @@ public final class EstiloUI {
     }
 
 
+=======
+>>>>>>> origin/main
     public static JLabel etiqueta(String texto) {
         JLabel l = new JLabel(texto);
         l.setForeground(AZUL);

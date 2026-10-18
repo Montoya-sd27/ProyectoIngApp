@@ -1,7 +1,10 @@
 package com.transporte.view;
 
 import com.transporte.controller.LoginController;
+<<<<<<< HEAD
 import com.transporte.controller.RegistroPublicoController;
+=======
+>>>>>>> origin/main
 import com.transporte.model.Usuario;
 import java.util.function.Consumer;
 
@@ -98,6 +101,7 @@ public class VentanaLogin extends JFrame {
             }
         });
 
+<<<<<<< HEAD
         // registro de cuentas nuevas (estudiante, empleado o conductor; el administrador lo crea otro administrador)
         JLabel lblSinCuenta = new JLabel("¿No tienes cuenta?", SwingConstants.CENTER);
         lblSinCuenta.setFont(new Font("Arial", Font.PLAIN, 13));
@@ -133,6 +137,8 @@ public class VentanaLogin extends JFrame {
             JOptionPane.showMessageDialog(this, "Error al abrir el registro: " + ex,
                     "Error", JOptionPane.ERROR_MESSAGE);
         }
+=======
+>>>>>>> origin/main
     }
 
     // ingresar
@@ -149,4 +155,8 @@ public class VentanaLogin extends JFrame {
             JOptionPane.showMessageDialog(null, "Correo o contraseña incorrectos", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> origin/main

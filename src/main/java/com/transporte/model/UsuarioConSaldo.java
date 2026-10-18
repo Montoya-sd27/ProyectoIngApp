@@ -18,10 +18,13 @@ public abstract class UsuarioConSaldo extends Usuario {
 
     public float getSaldo() { return saldo; }
 
+<<<<<<< HEAD
 public void setSaldo(float saldo) {
     this.saldo = saldo;
 }
 
+=======
+>>>>>>> origin/main
     /** Suma un monto (en Bs, mayor que cero) al saldo. */
     public void recargar(float monto) {
         if (!(monto > 0)) {
