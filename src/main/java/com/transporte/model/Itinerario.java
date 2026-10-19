@@ -10,6 +10,7 @@ public final class Itinerario {
     private final Conductor conductor;
     private final Horario horario;
     private final EstadoRecorrido estadoRecorrido;
+    private int cuposReservados;
 
     private Itinerario(Builder b) {
         this.idItinerario = b.id;
@@ -18,6 +19,7 @@ public final class Itinerario {
         this.conductor = b.conductor;
         this.horario = b.horario;
         this.estadoRecorrido = b.estado;
+        this.cuposReservados = Math.max(0, b.cuposReservados);
     }
 
     public String getIdItinerario() { return idItinerario; }
@@ -26,6 +28,9 @@ public final class Itinerario {
     public Conductor getConductor() { return conductor; }
     public Horario getHorario() { return horario; }
     public EstadoRecorrido getEstadoRecorrido() { return estadoRecorrido; }
+    public int getCuposReservados() { return cuposReservados; }
+    public void setCuposReservados(int cuposReservados) { this.cuposReservados = Math.max(0, cuposReservados); }
+    public void reservarCupo() { cuposReservados++; }
 
     public static class Builder {
         private String id;
@@ -34,6 +39,7 @@ public final class Itinerario {
         private Conductor conductor;
         private Horario horario;
         private EstadoRecorrido estado = EstadoRecorrido.PROGRAMADO;
+        private int cuposReservados;
 
         public Builder id(String id) { this.id = id; return this; }
         public Builder ruta(Ruta ruta) { this.ruta = ruta; return this; }
@@ -41,6 +47,7 @@ public final class Itinerario {
         public Builder conductor(Conductor conductor) { this.conductor = conductor; return this; }
         public Builder horario(Horario horario) { this.horario = horario; return this; }
         public Builder estado(EstadoRecorrido estado) { this.estado = estado; return this; }
+        public Builder cuposReservados(int cuposReservados) { this.cuposReservados = cuposReservados; return this; }
 
         public Itinerario build() throws ReglaNegocioException {
             if (ruta == null) throw new ReglaNegocioException("Debe seleccionar una ruta.");

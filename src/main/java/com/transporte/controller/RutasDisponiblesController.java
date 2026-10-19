@@ -3,6 +3,7 @@ package com.transporte.controller;
 import com.transporte.model.Autobus;
 import com.transporte.model.EstadoRecorrido;
 import com.transporte.model.Itinerario;
+import com.transporte.model.ReglaNegocioException;
 import com.transporte.model.Ruta;
 import com.transporte.model.RutaExtraurbana;
 import com.transporte.model.RutaFactory.TipoRuta;
@@ -31,12 +32,21 @@ public class RutasDisponiblesController {
     }
 
     /**
-     * Cupos que quedan en el itinerario: la capacidad de la unidad si está operativa y 0 si no lo está.
-     * Todavía no se descuentan reservas porque aún no se pueden hacer.
+     * Cupos que quedan en el itinerario: la capacidad de la unidad menos los cupos ya reservados,
+     * o 0 si la unidad no está operativa.
      */
     public int cuposDisponibles(Itinerario itinerario) {
         Autobus unidad = itinerario.getUnidad();
-        return ItinerarioController.esOperativa(unidad) ? unidad.getCapacidad() : 0;
+        if (!ItinerarioController.esOperativa(unidad)) return 0;
+        return Math.max(0, unidad.getCapacidad() - itinerario.getCuposReservados());
+    }
+
+    public synchronized void reservarCupo(Itinerario itinerario) throws ReglaNegocioException {
+        if (cuposDisponibles(itinerario) <= 0) {
+            throw new ReglaNegocioException("No quedan cupos disponibles en esta ruta.");
+        }
+        itinerario.reservarCupo();
+        repositorio.guardar(itinerario);
     }
 
     private static TipoRuta tipoDe(Ruta ruta) {

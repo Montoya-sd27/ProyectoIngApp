@@ -66,6 +66,7 @@ public class ItinerarioController {
                     + actual.getEstadoRecorrido().toString().toLowerCase() + ".");
         }
         Itinerario actualizado = construir(id, ruta, unidad, conductor, horario, estado);
+        actualizado.setCuposReservados(actual.getCuposReservados());
         validarReglas(actualizado);
         repositorio.guardar(actualizado);
         return actualizado;

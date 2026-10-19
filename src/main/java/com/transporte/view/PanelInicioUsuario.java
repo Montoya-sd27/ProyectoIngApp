@@ -39,6 +39,7 @@ public class PanelInicioUsuario extends JPanel {
     private final RecargaController recarga;
     private final TarifaConfiguracionController tarifas;
     private final CobroService cobro = new CobroService();
+    private TipoRuta tipoActual = TipoRuta.URBANA;
 
     private final BotonTipoRuta btnUrbana = new BotonTipoRuta("Ruta Urbana", "Área metropolitana");
     private final BotonTipoRuta btnExtraurbana = new BotonTipoRuta("Ruta Extraurbana", "Zonas periféricas");
@@ -143,6 +144,7 @@ public class PanelInicioUsuario extends JPanel {
 
     // muestra las rutas del tipo elegido y marca el botón correspondiente
     private void mostrarRutas(TipoRuta tipo) {
+        tipoActual = tipo;
         boolean urbana = tipo == TipoRuta.URBANA;
         btnUrbana.setSeleccionado(urbana);
         btnExtraurbana.setSeleccionado(!urbana);
@@ -271,6 +273,11 @@ public class PanelInicioUsuario extends JPanel {
 
     // abre la ventana con el precio total del viaje para este usuario; el ticket se emite al pulsar "Pagar cupo"
     private void abrirPagoCupo(Itinerario it) {
+        if (rutas.cuposDisponibles(it) <= 0) {
+            JOptionPane.showMessageDialog(this, "No quedan cupos disponibles en esta ruta.", "Atención", JOptionPane.WARNING_MESSAGE);
+            mostrarRutas(tipoActual);
+            return;
+        }
         TarifaRuta tarifa;
         try {
             tarifa = tarifas.tarifaDe(it.getRuta().getIdRuta());   // lee la tarifa vigente: incluye los cambios del administrador
@@ -285,7 +292,13 @@ public class PanelInicioUsuario extends JPanel {
 
         new DialogoPagoCupo(SwingUtilities.getWindowAncestor(this), usuario, titulo, it.getRuta().getOrigen(),
                 horario, descripcionRuta, tarifa, cobro, ticket -> {
+            try {
+                rutas.reservarCupo(it);
+            } catch (ReglaNegocioException ex) {
+                JOptionPane.showMessageDialog(this, ex.getMessage(), "Atención", JOptionPane.WARNING_MESSAGE);
+            }
             actualizarSaldo();
+            mostrarRutas(tipoActual);
             VentanaMisTickets.mostrarComprobanteTicket(this, ticket);
         }).setVisible(true);
     }

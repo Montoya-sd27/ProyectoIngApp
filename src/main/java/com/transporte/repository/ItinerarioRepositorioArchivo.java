@@ -104,7 +104,7 @@ public final class ItinerarioRepositorioArchivo implements ItinerarioRepositorio
         List<String> lineas = ArchivoLineas.leer(archivo);
         for (int i = 0; i < lineas.size(); i++) {
             List<String> c = ArchivoLineas.dividir(lineas.get(i));
-            if (c.size() != CAMPOS || !TIPO.equals(c.get(0))) {
+            if ((c.size() != CAMPOS && c.size() != CAMPOS + 1) || !TIPO.equals(c.get(0))) {
                 ArchivoLineas.advertirLineaInvalida(archivo, i + 1, "formato incorrecto");
                 continue;
             }
@@ -139,6 +139,7 @@ public final class ItinerarioRepositorioArchivo implements ItinerarioRepositorio
                 .conductor(conductor)
                 .horario(horario)
                 .estado(EstadoRecorrido.valueOf(c.get(17)))
+                .cuposReservados(c.size() > CAMPOS ? Integer.parseInt(c.get(CAMPOS).trim()) : 0)
                 .build();
     }
 
@@ -168,11 +169,15 @@ public final class ItinerarioRepositorioArchivo implements ItinerarioRepositorio
         Autobus u = it.getUnidad();
         Horario h = it.getHorario();
         TipoRuta tipo = r instanceof RutaExtraurbana ? TipoRuta.EXTRAURBANA : TipoRuta.URBANA;
-        return ArchivoLineas.unir(TIPO, it.getIdItinerario(), tipo.name(),
+        String[] base = {TIPO, it.getIdItinerario(), tipo.name(),
                 r.getIdRuta(), r.getOrigen(), r.getDestino(), r.getDetalle(),
                 c.getCedula(), c.getNombre(), c.getLicencia(),
                 u.getPlaca(), u.getModelo(), String.valueOf(u.getCapacidad()), u.getEstado(),
                 h.getDia().name(), h.getSalida().toString(), h.getLlegada().toString(),
-                it.getEstadoRecorrido().name());
+                it.getEstadoRecorrido().name()};
+        if (it.getCuposReservados() == 0) return ArchivoLineas.unir(base);
+        String[] conReservas = java.util.Arrays.copyOf(base, base.length + 1);
+        conReservas[base.length] = String.valueOf(it.getCuposReservados());
+        return ArchivoLineas.unir(conReservas);
     }
 }
