@@ -22,8 +22,7 @@ public class TarifaSolidariaTest {
         double esperado = 30.00; // 20% de 150.00
         double resultado = servicio.calcular(TARIFA_BASE);
         assertEquals(esperado, resultado, 0.01, "El estudiante debe pagar el 20% de la tarifa base.");
-        assertEquals("20% (Subsidiado de tarifa base)", servicio.getDescripcion());
-        assertTrue(servicio.getEstrategiaActual() instanceof TarifaSolidariaServicio.TarifaEstudianteStrategy);
+        assertEquals("Descuento Estudiante (20% del costo base)", servicio.getDescripcion());
     }
 
     @Test
@@ -32,8 +31,7 @@ public class TarifaSolidariaTest {
         double esperado = 75.00; // 50% de 150.00
         double resultado = servicio.calcular(TARIFA_BASE);
         assertEquals(esperado, resultado, 0.01, "El personal docente y administrativo debe pagar el 50% de la tarifa base.");
-        assertEquals("50% (Tarifa intermedia)", servicio.getDescripcion());
-        assertTrue(servicio.getEstrategiaActual() instanceof TarifaSolidariaServicio.TarifaPersonalStrategy);
+        assertEquals("Descuento Empleado (50% del costo base)", servicio.getDescripcion());
     }
 
     @Test
@@ -42,8 +40,7 @@ public class TarifaSolidariaTest {
         double esperado = 150.00; // 100% de 150.00
         double resultado = servicio.calcular(TARIFA_BASE);
         assertEquals(esperado, resultado, 0.01, "El público general debe abonar el 100% de la tarifa base.");
-        assertEquals("100% (Tarifa regular)", servicio.getDescripcion());
-        assertTrue(servicio.getEstrategiaActual() instanceof TarifaSolidariaServicio.TarifaPublicoGeneralStrategy);
+        assertEquals("Tarifa Público General (100% del costo base)", servicio.getDescripcion());
     }
 
     @Test

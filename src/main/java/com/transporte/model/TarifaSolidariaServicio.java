@@ -56,6 +56,10 @@ public class TarifaSolidariaServicio {
 
     private EstrategiaTarifa estrategiaActual = new EstrategiaPublico();
 
+    public EstrategiaTarifa getEstrategiaActual() {
+        return estrategiaActual;
+    }
+
     public void setEstrategia(EstrategiaTarifa estrategia) {
         if (estrategia != null) {
             this.estrategiaActual = estrategia;
@@ -78,6 +82,9 @@ public class TarifaSolidariaServicio {
     }
 
     public double calcular(double tarifaBase) {
+        if (tarifaBase < 0) {
+            throw new IllegalArgumentException("La tarifa base no puede ser negativa.");
+        }
         return estrategiaActual.calcular(tarifaBase);
     }
 
