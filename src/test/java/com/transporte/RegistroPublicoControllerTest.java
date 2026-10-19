@@ -25,13 +25,13 @@ class RegistroPublicoControllerTest {
     // 1. Los tres roles públicos se registran, crean su subclase y pueden iniciar sesión
     @Test
     void registraEstudianteEmpleadoYConductorYPuedenEntrar() throws ReglaNegocioException {
-        registro.registrar("Ana", "Lopez", "1000001", "ana@gmail.com", "clave", "clave", "Estudiante");
-        registro.registrar("Beto", "Mora", "1000002", "beto@ucv.ve", "clave", "clave", "Empleado");
-        registro.registrar("Carla", "Ruiz", "1000003", "carla@hotmail.com", "clave", "clave", "Conductor");
+        registro.registrar("Ana", "Lopez", "1000001", "ana@gmail.com", "clave123", "clave123", "Estudiante");
+        registro.registrar("Beto", "Mora", "1000002", "beto@ucv.ve", "clave123", "clave123", "Empleado");
+        registro.registrar("Carla", "Ruiz", "1000003", "carla@hotmail.com", "clave123", "clave123", "Conductor");
 
-        assertTrue(login.iniciarSesion("ana@gmail.com", "clave") instanceof Estudiante);
-        assertTrue(login.iniciarSesion("beto@ucv.ve", "clave") instanceof Empleado);
-        assertTrue(login.iniciarSesion("carla@hotmail.com", "clave") instanceof UsuarioConductor);
+        assertTrue(login.iniciarSesion("ana@gmail.com", "clave123") instanceof Estudiante);
+        assertTrue(login.iniciarSesion("beto@ucv.ve", "clave123") instanceof Empleado);
+        assertTrue(login.iniciarSesion("carla@hotmail.com", "clave123") instanceof UsuarioConductor);
     }
 
     // 2. El rol Administrador no se ofrece ni se acepta: solo otro administrador puede crear un admin
@@ -41,9 +41,9 @@ class RegistroPublicoControllerTest {
         assertEquals(java.util.List.of("Estudiante", "Empleado", "Conductor"), registro.rolesDisponibles());
 
         ReglaNegocioException ex = assertThrows(ReglaNegocioException.class,
-                () -> registro.registrar("Pedro", "Perez", "1000005", "pedro@ucv.ve", "clave", "clave", "Administrador"));
+                () -> registro.registrar("Pedro", "Perez", "1000005", "pedro@ucv.ve", "clave123", "clave123", "Administrador"));
         assertTrue(ex.getMessage().toLowerCase().contains("administrador"));
-        assertNull(login.iniciarSesion("pedro@ucv.ve", "clave"), "No debe haberse creado el usuario");
+        assertNull(login.iniciarSesion("pedro@ucv.ve", "clave123"), "No debe haberse creado el usuario");
         assertEquals(1, CargaDatosLogin.listarUsuarios().size(), "Solo el administrador por defecto");
     }
 
@@ -61,11 +61,11 @@ class RegistroPublicoControllerTest {
     @Test
     void rechazaContrasenasQueNoCoinciden() {
         ReglaNegocioException ex = assertThrows(ReglaNegocioException.class,
-                () -> registro.registrar("Ana", "Lopez", "1000001", "ana@ucv.ve", "clave", "otra", "Estudiante"));
+                () -> registro.registrar("Ana", "Lopez", "1000001", "ana@ucv.ve", "clave123", "otra", "Estudiante"));
         assertTrue(ex.getMessage().toLowerCase().contains("contraseñas"));
         assertThrows(ReglaNegocioException.class,
-                () -> registro.registrar("Ana", "Lopez", "1000001", "ana@ucv.ve", "clave", null, "Estudiante"));
-        assertNull(login.iniciarSesion("ana@ucv.ve", "clave"));
+                () -> registro.registrar("Ana", "Lopez", "1000001", "ana@ucv.ve", "clave123", null, "Estudiante"));
+        assertNull(login.iniciarSesion("ana@ucv.ve", "clave123"));
     }
 
     // 5. Las mismas reglas del backoffice: nombre, apellido, cédula y correo
@@ -89,7 +89,7 @@ class RegistroPublicoControllerTest {
     // 6. Correo o cédula repetidos (también contra el administrador por defecto)
     @Test
     void rechazaCorreoOCedulaRepetidos() throws ReglaNegocioException {
-        registro.registrar("Ana", "Lopez", "1000001", "ana@ucv.ve", "clave", "clave", "Estudiante");
+        registro.registrar("Ana", "Lopez", "1000001", "ana@ucv.ve", "clave123", "clave123", "Estudiante");
 
         assertThrows(ReglaNegocioException.class,
                 () -> registro.registrar("Otra", "Persona", "1000002", "ANA@ucv.ve", "x", "x", "Empleado"));

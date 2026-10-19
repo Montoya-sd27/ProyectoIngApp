@@ -30,9 +30,9 @@ public class Main {
     private static void cargarFlotaDemo(FlotaModel flota) {
         // Con los datos guardados en archivo, la demo solo agrega las unidades que todavía no existen.  
         Autobus[] demo = {
-            new Autobus("ABC123", "Encava", 40, "Operativo"),
-            new Autobus("XYZ789", "Yutong", 45, "Operativo"),
-            new Autobus("MNT456", "Bluebird", 35, "En Mantenimiento")
+            new Autobus("AB123CD", "Encava", 40, "Operativo"),
+            new Autobus("XY789ZW", "Yutong", 45, "Operativo"),
+            new Autobus("MN456TE", "Bluebird", 35, "En Mantenimiento")
         };
         for (Autobus bus : demo) {
             if (!flota.existePlaca(bus.getPlaca())) flota.agregarAutobus(bus);

@@ -117,27 +117,27 @@ class PersistenciaArchivosTest {
         FlotaModel flota = new FlotaModel();
         new PersistenciaArchivos(carpeta).activarUnidades(flota);
 
-        flota.agregarAutobus(new Autobus("abc123", "Encava", 40, "Operativo"));
-        flota.agregarAutobus(new Autobus("XYZ789", "Yutong", 45, "Operativo"));
-        assertEquals(List.of("UNIDAD|ABC123|Encava|40|Operativo", "UNIDAD|XYZ789|Yutong|45|Operativo"),
+        flota.agregarAutobus(new Autobus("ab123cd", "Encava", 40, "Operativo"));
+        flota.agregarAutobus(new Autobus("XY789ZW", "Yutong", 45, "Operativo"));
+        assertEquals(List.of("UNIDAD|AB123CD|Encava|40|Operativo", "UNIDAD|XY789ZW|Yutong|45|Operativo"),
                 Files.readAllLines(unidades));
 
-        flota.actualizarAutobus(0, new Autobus("ABC123", "Encava", 50, "En Mantenimiento"));
-        assertEquals("UNIDAD|ABC123|Encava|50|En Mantenimiento", Files.readAllLines(unidades).get(0));
+        flota.actualizarAutobus(0, new Autobus("AB123CD", "Encava", 50, "En Mantenimiento"));
+        assertEquals("UNIDAD|AB123CD|Encava|50|En Mantenimiento", Files.readAllLines(unidades).get(0));
 
         // lo que hace el botón "Cambiar estado": modifica la unidad directamente y avisa del cambio
         flota.obtenerAutobus(1).setEstado("Fuera de Servicio");
         flota.notificarCambio();
-        assertEquals("UNIDAD|XYZ789|Yutong|45|Fuera de Servicio", Files.readAllLines(unidades).get(1));
+        assertEquals("UNIDAD|XY789ZW|Yutong|45|Fuera de Servicio", Files.readAllLines(unidades).get(1));
 
         flota.eliminarAutobus(0);
-        assertEquals(List.of("UNIDAD|XYZ789|Yutong|45|Fuera de Servicio"), Files.readAllLines(unidades));
+        assertEquals(List.of("UNIDAD|XY789ZW|Yutong|45|Fuera de Servicio"), Files.readAllLines(unidades));
 
         FlotaModel despuesDeReiniciar = new FlotaModel();
         new PersistenciaArchivos(carpeta).activarUnidades(despuesDeReiniciar);
         assertEquals(1, despuesDeReiniciar.getListaAutobuses().size());
         Autobus cargado = despuesDeReiniciar.obtenerAutobus(0);
-        assertEquals("XYZ789", cargado.getPlaca());
+        assertEquals("XY789ZW", cargado.getPlaca());
         assertEquals(45, cargado.getCapacidad());
         assertEquals("Fuera de Servicio", cargado.getEstado());
     }
@@ -145,18 +145,18 @@ class PersistenciaArchivosTest {
     @Test
     void lasLineasInvalidasORepetidasDeUnidadesSeIgnoran() throws Exception {
         Files.write(unidades, List.of(
-                "UNIDAD|AAA111|Encava|40|Operativo",
-                "UNIDAD|AAA111|Repetida|30|Operativo",
+                "UNIDAD|AA111AA|Encava|40|Operativo",
+                "UNIDAD|AA111AA|Repetida|30|Operativo",
                 "texto suelto sin formato",
-                "UNIDAD|BBB222|Yutong|muchos|Operativo",
-                "UNIDAD|CCC333|Yutong|0|Operativo",
+                "UNIDAD|BB222BB|Yutong|muchos|Operativo",
+                "UNIDAD|CC333CC|Yutong|0|Operativo",
                 ""));
 
         FlotaModel flota = new FlotaModel();
         new PersistenciaArchivos(carpeta).activarUnidades(flota);
 
         assertEquals(1, flota.getListaAutobuses().size());
-        assertEquals("AAA111", flota.obtenerAutobus(0).getPlaca());
+        assertEquals("AA111AA", flota.obtenerAutobus(0).getPlaca());
     }
 
     // ---------- Rutas (itinerarios) ----------
@@ -176,7 +176,7 @@ class PersistenciaArchivosTest {
     @Test
     void cadaItinerarioSeGuardaEnUnaLineaConRutaChoferYHorarios() throws Exception {
         FlotaModel flota = new FlotaModel();
-        Autobus bus = new Autobus("AAA111", "Encava", 40, "Operativo");
+        Autobus bus = new Autobus("AA111AA", "Encava", 40, "Operativo");
         flota.agregarAutobus(bus);
         ItinerarioRepositorioArchivo repo = new ItinerarioRepositorioArchivo(rutas, flota);
         ItinerarioController controller = new ItinerarioController(repo, Catalogo.vacio(flota));
@@ -184,7 +184,7 @@ class PersistenciaArchivosTest {
         crearItinerario(controller, bus, rutaUrbana(), DayOfWeek.MONDAY, EstadoRecorrido.PROGRAMADO);
 
         assertEquals(List.of("RUTA|IT-001|URBANA|RU-01|UCV|Plaza Venezuela|Los Chaguaramos, Tamanaco"
-                        + "|V-1|Carlos Pérez|5ta|AAA111|Encava|40|Operativo|MONDAY|07:00|08:30|PROGRAMADO"),
+                        + "|V-1|Carlos Pérez|5ta|AA111AA|Encava|40|Operativo|MONDAY|07:00|08:30|PROGRAMADO"),
                 Files.readAllLines(rutas));
 
         // "reinicio": un repositorio nuevo lee el mismo archivo
@@ -206,7 +206,7 @@ class PersistenciaArchivosTest {
     @Test
     void laRutaExtraurbanaSeRecuperaYElSiguienteIdContinua() throws Exception {
         FlotaModel flota = new FlotaModel();
-        Autobus bus = new Autobus("AAA111", "Encava", 40, "Operativo");
+        Autobus bus = new Autobus("AA111AA", "Encava", 40, "Operativo");
         flota.agregarAutobus(bus);
         ItinerarioRepositorioArchivo repo = new ItinerarioRepositorioArchivo(rutas, flota);
         ItinerarioController controller = new ItinerarioController(repo, Catalogo.vacio(flota));
@@ -227,7 +227,7 @@ class PersistenciaArchivosTest {
     @Test
     void eliminarUnItinerarioActualizaElArchivo() throws Exception {
         FlotaModel flota = new FlotaModel();
-        Autobus bus = new Autobus("AAA111", "Encava", 40, "Operativo");
+        Autobus bus = new Autobus("AA111AA", "Encava", 40, "Operativo");
         flota.agregarAutobus(bus);
         ItinerarioRepositorioArchivo repo = new ItinerarioRepositorioArchivo(rutas, flota);
         ItinerarioController controller = new ItinerarioController(repo, Catalogo.vacio(flota));
@@ -246,14 +246,14 @@ class PersistenciaArchivosTest {
         PersistenciaArchivos persistencia = new PersistenciaArchivos(carpeta);
         FlotaModel flota = new FlotaModel();
         persistencia.activarUnidades(flota);
-        flota.agregarAutobus(new Autobus("AAA111", "Encava", 40, "Operativo"));
+        flota.agregarAutobus(new Autobus("AA111AA", "Encava", 40, "Operativo"));
         ItinerarioRepositorioArchivo repo = persistencia.activarItinerarios(flota);
         ItinerarioController controller = new ItinerarioController(repo, Catalogo.vacio(flota));
         crearItinerario(controller, flota.obtenerAutobus(0), rutaUrbana(), DayOfWeek.MONDAY, EstadoRecorrido.PROGRAMADO);
 
-        flota.actualizarAutobus(0, new Autobus("BBB222", "Yutong", 45, "Operativo"));
+        flota.actualizarAutobus(0, new Autobus("BB222BB", "Yutong", 45, "Operativo"));
 
-        assertTrue(Files.readAllLines(rutas).get(0).contains("|BBB222|Yutong|45|Operativo|"));
+        assertTrue(Files.readAllLines(rutas).get(0).contains("|BB222BB|Yutong|45|Operativo|"));
 
         // al reiniciar, el itinerario vuelve a enlazarse con la unidad de la flota
         PersistenciaArchivos otra = new PersistenciaArchivos(carpeta);
@@ -268,7 +268,7 @@ class PersistenciaArchivosTest {
         PersistenciaArchivos persistencia = new PersistenciaArchivos(carpeta);
         FlotaModel flota = new FlotaModel();
         persistencia.activarUnidades(flota);
-        flota.agregarAutobus(new Autobus("AAA111", "Encava", 40, "Operativo"));
+        flota.agregarAutobus(new Autobus("AA111AA", "Encava", 40, "Operativo"));
         ItinerarioRepositorioArchivo repo = persistencia.activarItinerarios(flota);
         ItinerarioController controller = new ItinerarioController(repo, Catalogo.vacio(flota));
         crearItinerario(controller, flota.obtenerAutobus(0), rutaUrbana(), DayOfWeek.MONDAY, EstadoRecorrido.PROGRAMADO);
@@ -281,20 +281,20 @@ class PersistenciaArchivosTest {
         ItinerarioRepositorioArchivo repoNuevo = otra.activarItinerarios(flotaNueva);
         assertTrue(flotaNueva.getListaAutobuses().isEmpty());
         assertEquals(1, repoNuevo.listar().size());
-        assertEquals("AAA111", repoNuevo.listar().get(0).getUnidad().getPlaca());
+        assertEquals("AA111AA", repoNuevo.listar().get(0).getUnidad().getPlaca());
         assertEquals("Encava", repoNuevo.listar().get(0).getUnidad().getModelo());
     }
 
     @Test
     void lasLineasInvalidasDeRutasSeIgnoran() throws Exception {
         String valida = ArchivoLineas.unir("RUTA", "IT-005", "URBANA", "RU-01", "UCV", "Chacaíto", "",
-                "V-1", "Carlos Pérez", "5ta", "AAA111", "Encava", "40", "Operativo",
+                "V-1", "Carlos Pérez", "5ta", "AA111AA", "Encava", "40", "Operativo",
                 "FRIDAY", "09:00", "10:00", "PROGRAMADO");
         String tipoMalo = ArchivoLineas.unir("RUTA", "IT-006", "VOLADORA", "RU-01", "UCV", "Chacaíto", "",
-                "V-1", "Carlos Pérez", "5ta", "AAA111", "Encava", "40", "Operativo",
+                "V-1", "Carlos Pérez", "5ta", "AA111AA", "Encava", "40", "Operativo",
                 "FRIDAY", "09:00", "10:00", "PROGRAMADO");
         String horaMala = ArchivoLineas.unir("RUTA", "IT-007", "URBANA", "RU-01", "UCV", "Chacaíto", "",
-                "V-1", "Carlos Pérez", "5ta", "AAA111", "Encava", "40", "Operativo",
+                "V-1", "Carlos Pérez", "5ta", "AA111AA", "Encava", "40", "Operativo",
                 "FRIDAY", "11:00", "10:00", "PROGRAMADO");
         Files.write(rutas, List.of(valida, "esto no es una ruta", tipoMalo, horaMala));
 

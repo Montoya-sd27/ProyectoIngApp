@@ -34,34 +34,34 @@ class IntegracionFlotaItinerariosTest {
     @Test
     void unidadRegistradaEnFlotaApareceParaItinerarios() {
         assertTrue(controller.unidadesOperativas().isEmpty());
-        flota.agregarAutobus(new Autobus("abc123", "Encava", 40, "Operativo"));
+        flota.agregarAutobus(new Autobus("ab123cd", "Encava", 40, "Operativo"));
         assertEquals(1, controller.unidadesOperativas().size());
-        assertEquals("ABC123", controller.unidadesOperativas().get(0).getPlaca());
+        assertEquals("AB123CD", controller.unidadesOperativas().get(0).getPlaca());
     }
 
     @Test
     void unidadEnMantenimientoOFueraDeServicioNoSeOfrece() {
-        flota.agregarAutobus(new Autobus("AAA111", "Encava", 40, "En Mantenimiento"));
-        flota.agregarAutobus(new Autobus("BBB222", "Yutong", 45, "Fuera de Servicio"));
-        flota.agregarAutobus(new Autobus("CCC333", "Bluebird", 35, "Operativo"));
+        flota.agregarAutobus(new Autobus("AA111AA", "Encava", 40, "En Mantenimiento"));
+        flota.agregarAutobus(new Autobus("BB222BB", "Yutong", 45, "Fuera de Servicio"));
+        flota.agregarAutobus(new Autobus("CC333CC", "Bluebird", 35, "Operativo"));
         assertEquals(1, controller.unidadesOperativas().size());
-        assertEquals("CCC333", controller.unidadesOperativas().get(0).getPlaca());
+        assertEquals("CC333CC", controller.unidadesOperativas().get(0).getPlaca());
     }
 
     @Test
     void editarUnidadEnFlotaSeReflejaEnElItinerarioExistente() throws Exception {
-        flota.agregarAutobus(new Autobus("AAA111", "Encava", 40, "Operativo"));
+        flota.agregarAutobus(new Autobus("AA111AA", "Encava", 40, "Operativo"));
         Itinerario it = controller.crear(ruta, flota.obtenerAutobus(0), conductor, h(), EstadoRecorrido.PROGRAMADO);
 
-        flota.actualizarAutobus(0, new Autobus("ZZZ999", "Yutong", 50, "Operativo"));
+        flota.actualizarAutobus(0, new Autobus("ZZ999ZZ", "Yutong", 50, "Operativo"));
 
-        assertEquals("ZZZ999", controller.buscar(it.getIdItinerario()).getUnidad().getPlaca());
+        assertEquals("ZZ999ZZ", controller.buscar(it.getIdItinerario()).getUnidad().getPlaca());
         assertEquals("Yutong", controller.buscar(it.getIdItinerario()).getUnidad().getModelo());
     }
 
     @Test
     void unidadQuePasaAMantenimientoNoPuedeReasignarse() throws Exception {
-        flota.agregarAutobus(new Autobus("AAA111", "Encava", 40, "Operativo"));
+        flota.agregarAutobus(new Autobus("AA111AA", "Encava", 40, "Operativo"));
         Autobus bus = flota.obtenerAutobus(0);
         Itinerario it = controller.crear(ruta, bus, conductor, h(), EstadoRecorrido.PROGRAMADO);
 

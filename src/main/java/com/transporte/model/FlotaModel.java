@@ -33,6 +33,8 @@ public class FlotaModel {
 
     public void agregarAutobus(Autobus bus) {
         validarAutobus(bus, -1);
+        bus.setPlaca(bus.getPlaca().trim().toUpperCase());
+        bus.setModelo(bus.getModelo().trim());
         listaAutobuses.add(bus);
         notificarCambio();
     }

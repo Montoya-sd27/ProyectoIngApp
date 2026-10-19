@@ -35,9 +35,9 @@ class ItinerarioControllerTest {
     void setUp() {
         controller = new ItinerarioController(ItinerarioRepositorioMemoria.crearAislado(), Catalogo.vacio(new FlotaModel()));
         ruta = RutaFactory.crear(RutaFactory.TipoRuta.EXTRAURBANA, "RE-01", "UCV", "Los Teques", "Los Teques");
-        bus1 = new Autobus("AAA111", "Encava", 40, "Operativo");
-        bus2 = new Autobus("BBB222", "Yutong", 45, "Operativo");
-        busTaller = new Autobus("CCC333", "Bluebird", 35, "En Mantenimiento");
+        bus1 = new Autobus("AA111AA", "Encava", 40, "Operativo");
+        bus2 = new Autobus("BB222BB", "Yutong", 45, "Operativo");
+        busTaller = new Autobus("CC333CC", "Bluebird", 35, "En Mantenimiento");
         c1 = new Conductor("V-1", "Ana", "5ta");
         c2 = new Conductor("V-2", "Luis", "5ta");
     }
@@ -152,7 +152,7 @@ class ItinerarioControllerTest {
     void editaYElimina() throws Exception {
         Itinerario it = controller.crear(ruta, bus1, c1, h("07:00", "08:00"), EstadoRecorrido.PROGRAMADO);
         controller.editar(it.getIdItinerario(), ruta, bus2, c1, h("07:00", "08:00"), EstadoRecorrido.PROGRAMADO);
-        assertEquals("BBB222", controller.buscar(it.getIdItinerario()).getUnidad().getPlaca());
+        assertEquals("BB222BB", controller.buscar(it.getIdItinerario()).getUnidad().getPlaca());
         controller.eliminar(it.getIdItinerario());
         assertTrue(controller.listar().isEmpty());
     }

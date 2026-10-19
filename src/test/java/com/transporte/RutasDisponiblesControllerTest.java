@@ -27,8 +27,8 @@ class RutasDisponiblesControllerTest {
     @BeforeEach
     void preparar() {
         FlotaModel flota = new FlotaModel();
-        bus1 = new Autobus("AAA111", "Encava", 12, "Operativo");
-        bus2 = new Autobus("BBB222", "Yutong", 40, "Operativo");
+        bus1 = new Autobus("AA111AA", "Encava", 12, "Operativo");
+        bus2 = new Autobus("BB222BB", "Yutong", 40, "Operativo");
         flota.agregarAutobus(bus1);
         flota.agregarAutobus(bus2);
         chofer1 = new Conductor("V-1", "Ana", "5ta");
@@ -116,7 +116,7 @@ class RutasDisponiblesControllerTest {
 
     @Test
     void cadaReservaBajaLosCuposYNoSePuedeReservarConCero() throws Exception {
-        Autobus pequeno = new Autobus("CCC333", "Mini", 2, "Operativo");
+        Autobus pequeno = new Autobus("CC333CC", "Mini", 2, "Operativo");
         Itinerario it = crear(urbana("RU-01", "A", "B"), pequeno, chofer1, DayOfWeek.MONDAY, "06:00", "07:00", EstadoRecorrido.PROGRAMADO);
 
         rutas.reservarCupo(it);

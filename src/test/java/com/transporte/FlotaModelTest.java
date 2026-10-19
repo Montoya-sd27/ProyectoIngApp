@@ -19,20 +19,20 @@ public class FlotaModelTest {
     // 1. Verificación de Creación (Create)
     @Test
     public void testCrearAutobus() {
-        Autobus bus = new Autobus("BUS-01", "Modelo-A", 40, "Operativo");
+        Autobus bus = new Autobus("AB001CD", "Modelo-A", 40, "Operativo");
         flota.agregarAutobus(bus);
 
         assertEquals(1, flota.getListaAutobuses().size(), "Debe existir 1 unidad registrada.");
-        assertEquals("BUS-01", flota.obtenerAutobus(0).getPlaca());
+        assertEquals("AB001CD", flota.obtenerAutobus(0).getPlaca());
     }
 
     // 2. Verificación de Modificación (Update)
     @Test
     public void testModificarAutobus() {
-        Autobus bus = new Autobus("BUS-01", "Modelo-A", 40, "Operativo");
+        Autobus bus = new Autobus("AB001CD", "Modelo-A", 40, "Operativo");
         flota.agregarAutobus(bus);
 
-        Autobus busActualizado = new Autobus("BUS-01", "Modelo-B", 50, "En Mantenimiento");
+        Autobus busActualizado = new Autobus("AB001CD", "Modelo-B", 50, "En Mantenimiento");
         flota.actualizarAutobus(0, busActualizado);
 
         Autobus resultado = flota.obtenerAutobus(0);
@@ -44,7 +44,7 @@ public class FlotaModelTest {
     // 3. Verificación de Eliminación (Delete)
     @Test
     public void testEliminarAutobus() {
-        Autobus bus = new Autobus("BUS-01", "Modelo-A", 40, "Operativo");
+        Autobus bus = new Autobus("AB001CD", "Modelo-A", 40, "Operativo");
         flota.agregarAutobus(bus);
 
         flota.eliminarAutobus(0);
@@ -55,10 +55,10 @@ public class FlotaModelTest {
     // 4. Regla de negocio: Validación de placa única
     @Test
     public void testBloquearPlacaDuplicada() {
-        Autobus bus1 = new Autobus("BUS-01", "Modelo-A", 40, "Operativo");
+        Autobus bus1 = new Autobus("AB001CD", "Modelo-A", 40, "Operativo");
         flota.agregarAutobus(bus1);
 
-        Autobus busDuplicado = new Autobus("bus-01", "Modelo-C", 30, "Operativo");
+        Autobus busDuplicado = new Autobus("ab001cd", "Modelo-C", 30, "Operativo");
 
         assertThrows(IllegalArgumentException.class, () -> {
             flota.agregarAutobus(busDuplicado);
@@ -68,8 +68,8 @@ public class FlotaModelTest {
     // 5. Regla de negocio: Validación de capacidad válida (> 0)
     @Test
     public void testBloquearCapacidadInvalida() {
-        Autobus busCapacidadCero = new Autobus("BUS-02", "Modelo-A", 0, "Operativo");
-        Autobus busCapacidadNegativa = new Autobus("BUS-03", "Modelo-A", -5, "Operativo");
+        Autobus busCapacidadCero = new Autobus("AB002CD", "Modelo-A", 0, "Operativo");
+        Autobus busCapacidadNegativa = new Autobus("AB003CD", "Modelo-A", -5, "Operativo");
 
         assertThrows(IllegalArgumentException.class, () -> {
             flota.agregarAutobus(busCapacidadCero);
