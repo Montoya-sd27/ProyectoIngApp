@@ -144,10 +144,7 @@ public final class AppNavegacion implements NavegacionAdmin {
         vista.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         new AutobusController(flota, vista);
 
-        // La ventana nace con la tabla vacía: se cargan las unidades que ya existen en el modelo.
-        for (Autobus b : flota.getListaAutobuses()) {
-            vista.getModeloTabla().addRow(new Object[]{b.getPlaca(), b.getModelo(), b.getCapacidad(), b.getEstado()});
-        }
+        // AutobusController ya llena la tabla con las unidades del modelo al crearse.
 
         // Al volver, la tabla de itinerarios se refresca (la placa o el estado pudieron cambiar).
         vista.addWindowListener(new WindowAdapter() {
