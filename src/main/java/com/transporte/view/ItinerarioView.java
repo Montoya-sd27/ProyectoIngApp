@@ -27,8 +27,7 @@ import com.transporte.model.Itinerario;
 import com.transporte.model.ReglaNegocioException;
 import com.transporte.repository.ItinerarioObserver;
 
-
- /* lista de itinerarios, acciones Nuevo / Editar / Eliminar.
+/* lista de itinerarios, acciones Nuevo / Editar / Eliminar.
 Solo se refresca cuando hay cambio */
 public class ItinerarioView extends JFrame implements ItinerarioObserver {
 
@@ -53,7 +52,8 @@ public class ItinerarioView extends JFrame implements ItinerarioObserver {
         configurarTabla();
 
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setSize(1000, 640);
+        // Ancho ampliado para alojar los 7 botones holgadamente
+        setSize(1180, 660);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
         add(EstiloUI.encabezado(this::cerrarSesion), BorderLayout.NORTH);
@@ -70,7 +70,8 @@ public class ItinerarioView extends JFrame implements ItinerarioObserver {
         JPanel tarjeta = new JPanel(new BorderLayout(0, 12));
         tarjeta.setBackground(EstiloUI.BLANCO);
         tarjeta.setBorder(new EmptyBorder(20, 24, 20, 24));
-        tarjeta.setPreferredSize(new Dimension(900, 480));
+        // Ancho interno ajustado a 1100px
+        tarjeta.setPreferredSize(new Dimension(1100, 490));
 
         JLabel titulo = new JLabel("Gestión de itinerarios", SwingConstants.CENTER);
         titulo.setFont(EstiloUI.FUENTE_TITULO);
@@ -86,7 +87,8 @@ public class ItinerarioView extends JFrame implements ItinerarioObserver {
         scroll.getViewport().setBackground(EstiloUI.GRIS);
         scroll.setBorder(BorderFactory.createLineBorder(EstiloUI.GRIS, 2));
 
-        JPanel acciones = new JPanel(new FlowLayout(FlowLayout.RIGHT, 16, 0));
+        // Espaciado ajustado a 8px
+        JPanel acciones = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
         acciones.setOpaque(false);
         EstiloUI.BotonRedondeado nuevo = EstiloUI.botonVerde("Nuevo itinerario");
         EstiloUI.BotonRedondeado editar = EstiloUI.botonVerde("Editar");
@@ -104,15 +106,19 @@ public class ItinerarioView extends JFrame implements ItinerarioObserver {
         EstiloUI.BotonRedondeado usuarios = EstiloUI.botonAzul("Registrar usuario");
         usuarios.addActionListener(e -> navegacion.irABackofficeUsuarios());
 
-        // Botón agregado para THU-001
         EstiloUI.BotonRedondeado tarifas = EstiloUI.botonAzul("Configurar tarifas");
         tarifas.addActionListener(e -> navegacion.irAGestionTarifas());
 
-        JPanel navegar = new JPanel(new FlowLayout(FlowLayout.LEFT, 12, 0));
+        EstiloUI.BotonRedondeado consultaTarifas = EstiloUI.botonAzul("Consultar tarifas");
+        consultaTarifas.addActionListener(e -> navegacion.irAConsultaTarifas());
+
+        // Espaciado ajustado a 8px
+        JPanel navegar = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
         navegar.setOpaque(false);
         navegar.add(unidades);
         navegar.add(usuarios);
         navegar.add(tarifas);
+        navegar.add(consultaTarifas);
 
         JPanel botones = new JPanel(new BorderLayout());
         botones.setOpaque(false);
