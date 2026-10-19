@@ -1,19 +1,28 @@
 package com.transporte;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.time.DayOfWeek;
+import java.time.LocalTime;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.transporte.controller.ItinerarioController;
 import com.transporte.controller.RutasDisponiblesController;
-import com.transporte.model.*;
+import com.transporte.model.Autobus;
+import com.transporte.model.Conductor;
+import com.transporte.model.EstadoRecorrido;
+import com.transporte.model.FlotaModel;
+import com.transporte.model.Horario;
+import com.transporte.model.Itinerario;
+import com.transporte.model.Ruta;
+import com.transporte.model.RutaFactory;
 import com.transporte.model.RutaFactory.TipoRuta;
 import com.transporte.repository.Catalogo;
 import com.transporte.repository.ItinerarioRepositorio;
 import com.transporte.repository.ItinerarioRepositorioMemoria;
-import java.time.DayOfWeek;
-import java.time.LocalTime;
-import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
 class RutasDisponiblesControllerTest {
 
