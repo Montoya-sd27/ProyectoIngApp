@@ -52,12 +52,11 @@ public class FlotaModel {
             throw new IllegalArgumentException("El modelo no puede exceder los 40 caracteres.");
         }
 
-        // Validación de Capacidad (lo coloco de 1 a 100 pasajeros)
+        // Validación de Capacidad (1 a 100 pasajeros)
         if (bus.getCapacidad() <= 0 || bus.getCapacidad() > 100) {
             throw new IllegalArgumentException("La capacidad de pasajeros debe estar entre 1 y 100.");
         }
 
-        // Estandarizar la placa a mayúsculas y sin espacios a los extremos
         String placaNormalizada = bus.getPlaca().trim().toUpperCase();
         bus.setPlaca(placaNormalizada);
 
@@ -90,7 +89,6 @@ public class FlotaModel {
             throw new IllegalArgumentException("Los datos de actualización no pueden ser nulos.");
         }
 
-        // Validación de Placa
         if (bus.getPlaca() == null || bus.getPlaca().trim().isEmpty()) {
             throw new IllegalArgumentException("La placa no puede estar vacía.");
         }
@@ -98,7 +96,6 @@ public class FlotaModel {
             throw new IllegalArgumentException("La placa no puede exceder los 10 caracteres.");
         }
 
-        // Validación de Modelo
         if (bus.getModelo() == null || bus.getModelo().trim().isEmpty()) {
             throw new IllegalArgumentException("El modelo no puede estar vacío.");
         }
@@ -106,7 +103,6 @@ public class FlotaModel {
             throw new IllegalArgumentException("El modelo no puede exceder los 40 caracteres.");
         }
 
-        // Validación de Capacidad (1 a 100 pasajeros)
         if (bus.getCapacidad() <= 0 || bus.getCapacidad() > 100) {
             throw new IllegalArgumentException("La capacidad de pasajeros debe estar entre 1 y 100.");
         }
@@ -120,7 +116,6 @@ public class FlotaModel {
             }
         }
 
-        // INTEGRACIÓN: se actualiza el MISMO objeto (no se reemplaza en la lista) para que los itinerarios que ya referencian esta unidad vean la placa/modelo/estado nuevos.
         Autobus existente = listaAutobuses.get(indice);
         existente.setPlaca(bus.getPlaca());
         existente.setModelo(bus.getModelo());
@@ -138,12 +133,21 @@ public class FlotaModel {
         }
     }
 
-    /** Registra una acción que se ejecuta cada vez que cambia la lista de unidades o alguna de ellas. */
+    public void alternarEstado(int indice) {
+        if (indice < 0 || indice >= listaAutobuses.size()) {
+            throw new IndexOutOfBoundsException("La unidad seleccionada no existe.");
+        }
+        Autobus bus = listaAutobuses.get(indice);
+        String estadoActual = bus.getEstado();
+        String nuevoEstado = alternarSiguienteEstado(estadoActual);
+        bus.setEstado(nuevoEstado);
+        notificarCambio();
+    }
+
     public void agregarOyente(Runnable oyente) {
         oyentes.add(oyente);
     }
 
-    /** Avisa a los oyentes de que hubo un cambio (también para cambios hechos directamente sobre un Autobus). */
     public void notificarCambio() {
         for (Runnable oyente : oyentes) {
             oyente.run();
