@@ -34,17 +34,10 @@ public class GestionFlotaVentana extends JFrame {
         this(null, null);
     }
 
-    /**
-     * @param onCerrarSesion acción del botón "Cerrar sesión" del encabezado (null = sin botón).
-     */
     public GestionFlotaVentana(Runnable onCerrarSesion) {
         this(onCerrarSesion, null);
     }
 
-    /**
-     * @param onCerrarSesion acción del botón "Cerrar sesión" del encabezado (null = sin botón).
-     * @param onVolver       acción del botón "Volver a itinerarios" (null = sin botón).
-     */
     public GestionFlotaVentana(Runnable onCerrarSesion, Runnable onVolver) {
         this.onCerrarSesion = onCerrarSesion;
         this.onVolver = onVolver;
@@ -59,7 +52,6 @@ public class GestionFlotaVentana extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        // Listener para destildar la tabla al hacer clic en cualquier parte en blanco
         MouseAdapter destildarTablaListener = new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
@@ -67,13 +59,13 @@ public class GestionFlotaVentana extends JFrame {
             }
         };
 
-        // 1. Campos del formulario (fondo gris de la paleta)
+        // 1. Campos del formulario
         txtPlaca = new JTextField();
         txtModelo = new JTextField();
         txtCapacidad = new JTextField();
         cmbEstado = new JComboBox<>(new String[]{"Operativo", "En Mantenimiento", "Fuera de Servicio"});
 
-        // FILTROS EN TIEMPO REAL
+        // FILTROS EN TIEMPO REAL (Placa máximo 7 caracteres alfanuméricos)
         configurarFiltroTexto((AbstractDocument) txtPlaca.getDocument(), 7, "[a-zA-Z0-9]*", true);
         configurarFiltroTexto((AbstractDocument) txtModelo.getDocument(), 40, "[a-zA-Z0-9\\s\\-\\.]*", false);
         configurarFiltroTexto((AbstractDocument) txtCapacidad.getDocument(), 3, "\\d*", false);
@@ -113,7 +105,6 @@ public class GestionFlotaVentana extends JFrame {
         tblAutobuses.setBackground(EstiloUI.GRIS);
         tblAutobuses.setGridColor(EstiloUI.BLANCO);
 
-        // Renderizador: fila seleccionada en azul con texto blanco, centrado en todas las celdas
         DefaultTableCellRenderer renderizador = new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value,
@@ -136,13 +127,11 @@ public class GestionFlotaVentana extends JFrame {
             tblAutobuses.getColumnModel().getColumn(i).setCellRenderer(renderizador);
         }
 
-        // Anchos de columnas balanceados y proporcionados
         tblAutobuses.getColumnModel().getColumn(0).setPreferredWidth(160);
         tblAutobuses.getColumnModel().getColumn(1).setPreferredWidth(320);
         tblAutobuses.getColumnModel().getColumn(2).setPreferredWidth(130);
         tblAutobuses.getColumnModel().getColumn(3).setPreferredWidth(150);
 
-        // Encabezado de la tabla en azul fijo
         DefaultTableCellRenderer cabecera = new DefaultTableCellRenderer();
         cabecera.setBackground(EstiloUI.AZUL);
         cabecera.setForeground(Color.WHITE);
@@ -152,7 +141,6 @@ public class GestionFlotaVentana extends JFrame {
         tblAutobuses.getTableHeader().setReorderingAllowed(false);
         tblAutobuses.getTableHeader().setResizingAllowed(false);
 
-        // Destildar al hacer clic en el espacio vacío debajo de las filas en la tabla
         tblAutobuses.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -168,7 +156,7 @@ public class GestionFlotaVentana extends JFrame {
         scrollTabla.getViewport().setBackground(EstiloUI.GRIS);
         scrollTabla.getViewport().addMouseListener(destildarTablaListener);
 
-        // 3. Botones de acción (verde / rojo de la paleta; azul y amarillo para los secundarios)
+        // 3. Botones de acción
         btnAgregar = EstiloUI.botonVerde("Agregar Unidad");
         btnEditar = EstiloUI.botonVerde("Editar Seleccionado");
         btnEliminar = EstiloUI.botonRojo("Eliminar Unidad");
@@ -184,7 +172,7 @@ public class GestionFlotaVentana extends JFrame {
         pnlBotones.add(btnLimpiarSeleccion);
         pnlBotones.addMouseListener(destildarTablaListener);
 
-        // 4. Tarjeta blanca sobre fondo gris, con encabezado azul (igual que la pantalla de itinerarios)
+        // 4. Encabezados y contenedor
         JLabel titulo = new JLabel("Gestión de unidades", SwingConstants.CENTER);
         titulo.setFont(EstiloUI.FUENTE_TITULO);
         titulo.setForeground(EstiloUI.AZUL);
@@ -229,7 +217,6 @@ public class GestionFlotaVentana extends JFrame {
         add(EstiloUI.encabezado(onCerrarSesion), BorderLayout.NORTH);
         add(fondo, BorderLayout.CENTER);
 
-        // Clic en cualquier borde libre de la ventana destilda la tabla
         this.getContentPane().addMouseListener(destildarTablaListener);
     }
 
