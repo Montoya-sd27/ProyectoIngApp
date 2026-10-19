@@ -57,16 +57,11 @@ public class AutobusController {
         String capacidadTexto = vista.getTxtCapacidad().getText().trim();
         String estado = (String) vista.getCmbEstado().getSelectedItem();
 
-        if (placa.isEmpty() || modeloTexto.isEmpty() || capacidadTexto.isEmpty()) {
-            mostrarAviso("Por favor, complete todos los campos obligatorios.");
-            return;
-        }
-
         int capacidad;
         try {
             capacidad = Integer.parseInt(capacidadTexto);
         } catch (NumberFormatException e) {
-            mostrarAviso("La capacidad debe ser un número entero.");
+            mostrarAviso("Ingresa una cantidad de pasajeros válida (solo números).");
             return;
         }
 
@@ -84,7 +79,7 @@ public class AutobusController {
     private void editarUnidad() {
         int fila = vista.getTablaAutobuses().getSelectedRow();
         if (fila == -1) {
-            mostrarAviso("Debe seleccionar una unidad de la tabla.");
+            mostrarAviso("Debe seleccionar una unidad de la tabla para editar.");
             return;
         }
 
@@ -93,16 +88,11 @@ public class AutobusController {
         String capacidadTexto = vista.getTxtCapacidad().getText().trim();
         String estado = (String) vista.getCmbEstado().getSelectedItem();
 
-        if (placa.isEmpty() || modeloTexto.isEmpty() || capacidadTexto.isEmpty()) {
-            mostrarAviso("Por favor, complete todos los campos obligatorios.");
-            return;
-        }
-
         int capacidad;
         try {
             capacidad = Integer.parseInt(capacidadTexto);
         } catch (NumberFormatException e) {
-            mostrarAviso("La capacidad debe ser un número entero.");
+            mostrarAviso("Ingresa una cantidad de pasajeros válida (solo números).");
             return;
         }
 
@@ -164,7 +154,7 @@ public class AutobusController {
 
     public void actualizarTabla() {
         DefaultTableModel model = vista.getModeloTabla();
-        model.setRowCount(0); // Limpia las filas visuales antes de pintar
+        model.setRowCount(0);
         List<Autobus> lista = modelo.getListaAutobuses();
         for (Autobus bus : lista) {
             model.addRow(new Object[]{
