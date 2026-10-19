@@ -1,8 +1,8 @@
 package com.transporte.controller;
 
+import com.transporte.model.CargaDatosLogin;
 import com.transporte.model.ReglaNegocioException;
 import com.transporte.model.Usuario;
-import com.transporte.model.UsuarioFactory;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,25 +12,21 @@ import java.util.List;
  */
 public class UsuarioAdminController {
 
+    private final RegistroUsuario registro;
+
     public UsuarioAdminController(Usuario solicitante) {
-        // Constructor para inicializar el controlador desde la navegación
+        this.registro = new RegistroAdmin(new LoginController(), solicitante);
     }
 
     public List<String> rolesDisponibles() {
-        List<String> roles = new ArrayList<>();
-        roles.add("Pasajero");
-        roles.add("Estudiante");
-        roles.add("Empleado");
-        roles.add("Conductor");
-        roles.add("Administrador");
-        return roles;
+        return new ArrayList<>(registro.rolesPermitidos());
     }
 
-  public void registrar(String nombre, String apellido, String cedula, String correo, String clave, String rol) throws ReglaNegocioException {
-    UsuarioFactory.crear(rol, nombre, apellido, cedula, correo, clave, 0);
-}
+    public void registrar(String nombre, String apellido, String cedula, String correo, String clave, String rol) throws ReglaNegocioException {
+        registro.registrar(nombre, apellido, cedula, correo, clave, clave, rol);
+    }
 
     public List<Usuario> listar() {
-        return new ArrayList<>();
+        return CargaDatosLogin.listarUsuarios();
     }
 }
