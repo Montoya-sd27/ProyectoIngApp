@@ -14,6 +14,7 @@ import com.transporte.model.Usuario;
 import com.transporte.model.UsuarioConSaldo;
 import com.transporte.repository.Catalogo;
 import com.transporte.repository.ItinerarioRepositorio;
+import com.transporte.view.ConsultaTarifaVentana;
 import com.transporte.persistence.PersistenciaArchivos;
 import com.transporte.view.GestionFlotaVentana;
 import com.transporte.view.GestionTarifasVentana;
@@ -56,6 +57,7 @@ public final class AppNavegacion implements NavegacionAdmin {
     private GestionFlotaVentana ventanaFlota;
     private RegistroUsuarioAdminVentana ventanaUsuarios;
     private GestionTarifasVentana ventanaTarifas;
+    private ConsultaTarifaVentana ventanaConsultaTarifas;
     private Usuario usuarioActual;   // quien inició sesión (el backoffice exige que sea Administrador)
 
     private AppNavegacion() {
@@ -179,7 +181,23 @@ public final class AppNavegacion implements NavegacionAdmin {
         ventanaTarifas = new GestionTarifasVentana(this::irAItinerarios, tarifas);
         ventanaTarifas.setVisible(true);
     }
-
+    /** Abre la pantalla de consulta de tarifas (THU-002). */
+    @Override
+    public void irAConsultaTarifas() {
+        if (ventanaConsultaTarifas != null && ventanaConsultaTarifas.isDisplayable()) {
+            ventanaConsultaTarifas.toFront();
+            return;
+        }
+        try {
+            ventanaConsultaTarifas = new ConsultaTarifaVentana(this::irAItinerarios, this::cerrarSesion);
+            ventanaConsultaTarifas.setVisible(true);
+        } catch (Throwable t) {
+            t.printStackTrace();
+            JOptionPane.showMessageDialog(ventanaItinerarios,
+                    "No se pudo abrir Consulta de Tarifas:\n" + t.toString(),
+                    "Error al Cargar Ventana", JOptionPane.ERROR_MESSAGE);
+        }
+    }
     /** Vuelve a itinerarios: cierra unidades, backoffice y tarifas (si están abiertos) y trae itinerarios al frente. */
     @Override
     public void irAItinerarios() {

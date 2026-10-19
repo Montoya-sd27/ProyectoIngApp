@@ -1,153 +1,73 @@
 package com.transporte.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+/**
+ * Modelo para la gestión en memoria de la flota de autobuses con validaciones estrictas y persistencia reactiva.
+ */
 public class FlotaModel {
-    private List<Autobus> listaAutobuses;
+
+    private final List<Autobus> listaAutobuses;
     private final List<Runnable> oyentes = new ArrayList<>();
 
     public FlotaModel() {
         this.listaAutobuses = new ArrayList<>();
     }
 
-    public boolean existePlaca(String placa) {
-        if (placa == null) return false;
-        for (Autobus bus : listaAutobuses) {
-            if (bus.getPlaca().equalsIgnoreCase(placa.trim())) {
-                return true;
-            }
-        }
-        return false;
+    public List<Autobus> getListaAutobuses() {
+        return Collections.unmodifiableList(listaAutobuses);
     }
 
-    public boolean existePlacaEnOtro(String placa, int indiceExcluido) {
-        if (placa == null) return false;
-        for (int i = 0; i < listaAutobuses.size(); i++) {
-            if (i != indiceExcluido && listaAutobuses.get(i).getPlaca().equalsIgnoreCase(placa.trim())) {
-                return true;
-            }
-        }
-        return false;
+    public int getCantidadUnidades() {
+        return listaAutobuses.size();
     }
 
-    public void agregarAutobus(Autobus bus) throws IllegalArgumentException {
-        if (bus == null) {
-            throw new IllegalArgumentException("El autobús no puede ser nulo.");
+    public Autobus obtenerAutobus(int indice) {
+        if (indice < 0 || indice >= listaAutobuses.size()) {
+            throw new IndexOutOfBoundsException("La unidad seleccionada no existe.");
         }
+        return listaAutobuses.get(indice);
+    }
 
-        // Validación de Placa
-        if (bus.getPlaca() == null || bus.getPlaca().trim().isEmpty()) {
-            throw new IllegalArgumentException("La placa no puede estar vacía.");
-        }
-        if (bus.getPlaca().trim().length() > 10) {
-            throw new IllegalArgumentException("La placa no puede exceder los 10 caracteres.");
-        }
-
-        // Validación de Modelo
-        if (bus.getModelo() == null || bus.getModelo().trim().isEmpty()) {
-            throw new IllegalArgumentException("El modelo no puede estar vacío.");
-        }
-        if (bus.getModelo().trim().length() > 40) {
-            throw new IllegalArgumentException("El modelo no puede exceder los 40 caracteres.");
-        }
-
-        // Validación de Capacidad (lo coloco de 1 a 100 pasajeros)
-        if (bus.getCapacidad() <= 0 || bus.getCapacidad() > 100) {
-            throw new IllegalArgumentException("La capacidad de pasajeros debe estar entre 1 y 100.");
-        }
-
-        // Estandarizar la placa a mayúsculas y sin espacios a los extremos
-        String placaNormalizada = bus.getPlaca().trim().toUpperCase();
-        bus.setPlaca(placaNormalizada);
-
-        for (Autobus existente : listaAutobuses) {
-            if (existente.getPlaca().equalsIgnoreCase(placaNormalizada)) {
-                throw new IllegalArgumentException("Ya existe una unidad registrada con la placa: " + existente.getPlaca());
-            }
-        }
-
+    public void agregarAutobus(Autobus bus) {
+        validarAutobus(bus, -1);
         listaAutobuses.add(bus);
         notificarCambio();
     }
 
-    public Autobus obtenerAutobus(int indice) {
-        if (indice >= 0 && indice < listaAutobuses.size()) {
-            return listaAutobuses.get(indice);
-        }
-        return null;
-    }
-
-    public List<Autobus> getListaAutobuses() {
-        return listaAutobuses;
-    }
-
-    public void actualizarAutobus(int indice, Autobus bus) throws IllegalArgumentException {
+    public void actualizarAutobus(int indice, Autobus busActualizado) {
         if (indice < 0 || indice >= listaAutobuses.size()) {
-            throw new IllegalArgumentException("Índice de unidad inválido.");
+            throw new IndexOutOfBoundsException("La unidad seleccionada no existe.");
         }
-        if (bus == null) {
-            throw new IllegalArgumentException("Los datos de actualización no pueden ser nulos.");
-        }
+        validarAutobus(busActualizado, indice);
 
-        // Validación de Placa
-        if (bus.getPlaca() == null || bus.getPlaca().trim().isEmpty()) {
-            throw new IllegalArgumentException("La placa no puede estar vacía.");
-        }
-        if (bus.getPlaca().trim().length() > 10) {
-            throw new IllegalArgumentException("La placa no puede exceder los 10 caracteres.");
-        }
-
-        // Validación de Modelo
-        if (bus.getModelo() == null || bus.getModelo().trim().isEmpty()) {
-            throw new IllegalArgumentException("El modelo no puede estar vacío.");
-        }
-        if (bus.getModelo().trim().length() > 40) {
-            throw new IllegalArgumentException("El modelo no puede exceder los 40 caracteres.");
-        }
-
-        // Validación de Capacidad (1 a 100 pasajeros)
-        if (bus.getCapacidad() <= 0 || bus.getCapacidad() > 100) {
-            throw new IllegalArgumentException("La capacidad de pasajeros debe estar entre 1 y 100.");
-        }
-
-        String placaNormalizada = bus.getPlaca().trim().toUpperCase();
-        bus.setPlaca(placaNormalizada);
-
-        for (int i = 0; i < listaAutobuses.size(); i++) {
-            if (i != indice && listaAutobuses.get(i).getPlaca().equalsIgnoreCase(placaNormalizada)) {
-                throw new IllegalArgumentException("Ya existe otra unidad registrada con la placa: " + listaAutobuses.get(i).getPlaca());
-            }
-        }
-
-        // INTEGRACIÓN: se actualiza el MISMO objeto (no se reemplaza en la lista) para que los itinerarios que ya referencian esta unidad vean la placa/modelo/estado nuevos.
         Autobus existente = listaAutobuses.get(indice);
-        existente.setPlaca(bus.getPlaca());
-        existente.setModelo(bus.getModelo());
-        existente.setCapacidad(bus.getCapacidad());
-        existente.setEstado(bus.getEstado());
+        existente.setPlaca(busActualizado.getPlaca().trim().toUpperCase());
+        existente.setModelo(busActualizado.getModelo().trim());
+        existente.setCapacidad(busActualizado.getCapacidad());
+        existente.setEstado(busActualizado.getEstado());
         notificarCambio();
     }
 
-    public void eliminarAutobus(int indice) throws IllegalArgumentException {
-        if (indice >= 0 && indice < listaAutobuses.size()) {
-            listaAutobuses.remove(indice);
-            notificarCambio();
-        } else {
-            throw new IllegalArgumentException("No se pudo eliminar: índice fuera de rango.");
+    public void eliminarAutobus(int indice) {
+        if (indice < 0 || indice >= listaAutobuses.size()) {
+            throw new IndexOutOfBoundsException("La unidad seleccionada no existe.");
         }
+        listaAutobuses.remove(indice);
+        notificarCambio();
     }
 
-    /** Registra una acción que se ejecuta cada vez que cambia la lista de unidades o alguna de ellas. */
-    public void agregarOyente(Runnable oyente) {
-        oyentes.add(oyente);
-    }
-
-    /** Avisa a los oyentes de que hubo un cambio (también para cambios hechos directamente sobre un Autobus). */
-    public void notificarCambio() {
-        for (Runnable oyente : oyentes) {
-            oyente.run();
+    public void alternarEstado(int indice) {
+        if (indice < 0 || indice >= listaAutobuses.size()) {
+            throw new IndexOutOfBoundsException("La unidad seleccionada no existe.");
         }
+        Autobus bus = listaAutobuses.get(indice);
+        String estadoActual = bus.getEstado();
+        String nuevoEstado = alternarSiguienteEstado(estadoActual);
+        bus.setEstado(nuevoEstado);
+        notificarCambio();
     }
 
     public String alternarSiguienteEstado(String estadoActual) {
@@ -162,6 +82,82 @@ public class FlotaModel {
                 return "Operativo";
             default:
                 return "Operativo";
+        }
+    }
+
+    public boolean existePlaca(String placa) {
+        return existePlaca(placa, -1);
+    }
+
+    public boolean existePlaca(String placa, int indiceExcluir) {
+        if (placa == null) {
+            return false;
+        }
+        String placaNormalizada = placa.trim().toUpperCase();
+        for (int i = 0; i < listaAutobuses.size(); i++) {
+            if (i != indiceExcluir) {
+                if (listaAutobuses.get(i).getPlaca().equalsIgnoreCase(placaNormalizada)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public void agregarOyente(Runnable oyente) {
+        if (oyente != null) {
+            oyentes.add(oyente);
+        }
+    }
+
+    public void notificarCambio() {
+        for (Runnable oyente : oyentes) {
+            oyente.run();
+        }
+    }
+
+    private void validarAutobus(Autobus bus, int indiceExcluir) {
+        if (bus == null) {
+            throw new IllegalArgumentException("Los datos de la unidad no pueden ser nulos.");
+        }
+
+        // 1. Validación estricta de Placa (formato AA111AA)
+        String placa = bus.getPlaca() != null ? bus.getPlaca().trim().toUpperCase() : "";
+        if (placa.isEmpty()) {
+            throw new IllegalArgumentException("La placa no puede estar vacía.");
+        }
+        if (placa.length() != 7) {
+            throw new IllegalArgumentException("La placa debe tener exactamente 7 caracteres.");
+        }
+        if (!placa.matches("^[A-Z]{2}[0-9]{3}[A-Z]{2}$")) {
+            throw new IllegalArgumentException("La placa no cumple el formato obligatorio: 2 letras, 3 números y 2 letras (ej: AA111AA).");
+        }
+        if (existePlaca(placa, indiceExcluir)) {
+            throw new IllegalArgumentException("Ya existe una unidad registrada con la placa: " + placa);
+        }
+
+        // 2. Validación estricta de Modelo
+        String modelo = bus.getModelo() != null ? bus.getModelo().trim() : "";
+        if (modelo.isEmpty()) {
+            throw new IllegalArgumentException("El modelo no puede estar vacío.");
+        }
+        if (modelo.length() < 2) {
+            throw new IllegalArgumentException("Modelo inválido.");
+        }
+        if (modelo.matches("^[0-9]+$")) {
+            throw new IllegalArgumentException("El modelo no puede ser únicamente numérico.");
+        }
+
+        // 3. Validación de Capacidad
+        int capacidad = bus.getCapacidad();
+        if (capacidad < 1 || capacidad > 100) {
+            throw new IllegalArgumentException("La capacidad de pasajeros debe estar entre 1 y 100.");
+        }
+
+        // 4. Validación de Estado
+        String estado = bus.getEstado();
+        if (estado == null || estado.trim().isEmpty()) {
+            throw new IllegalArgumentException("Debe seleccionar un estado operacional válido.");
         }
     }
 }

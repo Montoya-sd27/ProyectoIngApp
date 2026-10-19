@@ -18,6 +18,9 @@ public interface NavegacionAdmin {
     /** Abre la pantalla de configuración de tarifas de cobro solidario (THU-001). */
     void irAGestionTarifas();
 
+    /** Abre la pantalla de consulta de tarifas (THU-002). */
+    void irAConsultaTarifas();
+
     /** Cierra la sesión actual y vuelve al inicio de sesión. */
     void cerrarSesion();
 }
