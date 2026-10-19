@@ -9,11 +9,12 @@ PATRÓN STRATEGY : solo aplica la estrategia (ReglaValidacion) que corresponde a
 public final class ValidadorUsuario {
 
     // Límites de longitud para las validaciones del formulario
-    public static final int NOMBRE_MIN = 2;
+    public static final int NOMBRE_MIN = 3;
     public static final int NOMBRE_MAX = 40;
     public static final int CEDULA_MIN_DIGITOS = 6;
     public static final int CEDULA_MAX_DIGITOS = 8;
     public static final int CORREO_MAX = 254;
+    public static final int CONTRASENA_MIN = 8;
 
     // Estrategias de validación reutilizables por tipo de dato
     private static final ReglaValidacion NOMBRE = new ReglasUsuario.Nombre("nombre");
@@ -37,6 +38,11 @@ public final class ValidadorUsuario {
             throw new ReglaNegocioException("Por favor, llene todos los campos.");
         }
         
+        // VALIDACIÓN DE MÍNIMO DE CARACTERES EN CONTRASEÑA
+if (p.length() < CONTRASENA_MIN) {
+    throw new ReglaNegocioException("La contraseña debe tener al menos " + CONTRASENA_MIN + " caracteres.");
+}
+
         // Aplicamos cada estrategia para sanitizar y retornar los datos validados
         return new Datos(NOMBRE.validar(nombre), APELLIDO.validar(apellido),
                 CEDULA.validar(cedula), CORREO.validar(correo), p);
